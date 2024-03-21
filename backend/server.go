@@ -3,8 +3,10 @@ package main
 import (
     "encoding/json"
     "fmt"
+  "log"
     "net/http"
     "github.com/gorilla/mux"
+    "github.com/gorilla/handlers"
 )
 
 // HelloWorldResponse represents the JSON response
@@ -26,5 +28,5 @@ func main() {
     // Start the server
     port := ":8080"
     fmt.Printf("Server listening on port %s...\n", port)
-    http.ListenAndServe(port, r)
+    log.Fatal(http.ListenAndServe(port, handlers.CORS()(r)))
 }
