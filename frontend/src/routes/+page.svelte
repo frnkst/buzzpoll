@@ -1,4 +1,6 @@
 <script>
+import "carbon-components-svelte/css/g80.css";
+import { Accordion, AccordionItem } from "carbon-components-svelte";
 import { onMount } from 'svelte';
 onMount( () => {
     var conn;
@@ -48,9 +50,37 @@ onMount( () => {
 });
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<style>
+.logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            background-color: purple;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
 
+        /* Custom styles for the text */
+        .buzz {
+            color: #ffcc00; /* Buzz yellow */
+        }
+
+        .poll {
+            color: #00ccff; /* Poll blue */
+        }
+
+</style>
+
+<div class="logo-container">
+        <span class="buzz">buzz</span><span class="poll">poll</span>
+    </div>
+<Accordion>
+  <AccordionItem title="Section 1" open> Content 1 </AccordionItem>
+  <AccordionItem title="Section 2"> Content 2 </AccordionItem>
+  <AccordionItem title="Section 3"> Content 3 </AccordionItem>
+</Accordion>
 <div id="log"></div>
 <form id="form">
     <input type="submit" value="Send" />
