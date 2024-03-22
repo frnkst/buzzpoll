@@ -1,6 +1,5 @@
 <script>
-import "carbon-components-svelte/css/g80.css";
-import { Accordion, AccordionItem } from "carbon-components-svelte";
+import { Button } from 'attractions';
 import { onMount } from 'svelte';
 onMount( () => {
     var conn;
@@ -76,14 +75,12 @@ onMount( () => {
 <div class="logo-container">
         <span class="buzz">buzz</span><span class="poll">poll</span>
     </div>
-<Accordion>
-  <AccordionItem title="Section 1" open> Content 1 </AccordionItem>
-  <AccordionItem title="Section 2"> Content 2 </AccordionItem>
-  <AccordionItem title="Section 3"> Content 3 </AccordionItem>
-</Accordion>
 <div id="log"></div>
 <form id="form">
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64" autofocus />
 </form>
+
+ 
+<Button filled>click me</Button>
 
