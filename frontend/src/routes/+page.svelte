@@ -1,11 +1,12 @@
 <script>
-import { Button, Headline } from 'attractions';
+import  Button  from '../components/button.svelte';
 import { onMount } from 'svelte';
 
   const handleClick = () => {
     // Navigate to the "new" page
     window.location.href = '/new'; // Replace with your actual route
   };
+
 
 onMount( () => {
     var conn;
@@ -56,7 +57,7 @@ onMount( () => {
 </script>
 
 <style>
-.logo-container {
+.logo-container { 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,9 +79,7 @@ onMount( () => {
 
 </style>
 
-<Headline>BuzzPoll</Headline>
-<Button filled on:click={handleClick}>Create new poll</Button>
-
+<Button></Button>
 <form id="form">
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64" autofocus />
