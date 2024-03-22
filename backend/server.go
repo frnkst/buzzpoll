@@ -1,32 +1,49 @@
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-  "log"
-    "net/http"
-    "github.com/gorilla/mux"
-    "github.com/gorilla/handlers"
+	"flag"
+	"log"
+	"net/http"
+	"time"
+  "github.com/gorilla/handlers"
+  "github.com/gorilla/mux"
+  
 )
 
-// HelloWorldResponse represents the JSON response
-type HelloWorldResponse struct {
-    Message string `json:"msg"`
+var addr = flag.String("addr", ":8080", "http service address")
+
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL)
+	if r.URL.Path != "/" {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	http.ServeFile(w, r, "home.html")
 }
 
 func main() {
-    r := mux.NewRouter()
+	flag.Parse()
+	hub := newHub()
+	go hub.run()
 
-    // Define a route that returns "Hello, World!" as JSON
-    r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        response := HelloWorldResponse{Message: "Hello, World!"}
-        w.Header().Set("Content-Type", "application/json")
-        w.WriteHeader(http.StatusOK)
-        json.NewEncoder(w).Encode(response)
-    })
-
-    // Start the server
-    port := ":8080"
-    fmt.Printf("Server listening on port %s...\n", port)
-    log.Fatal(http.ListenAndServe(port, handlers.CORS()(r)))
+	r := mux.NewRouter()
+	r.HandleFunc("/", serveHome)
+	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+  })
+  
+	server := &http.Server{
+		Addr:              *addr,
+		ReadHeaderTimeout: 3 * time.Second,
+    Handler: handlers.CORS()(r),
+	}
+  
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
