@@ -1,7 +1,6 @@
 <script>
-import  Button  from '../components/button.svelte';
 import { onMount } from 'svelte';
-
+import { Button } from 'attractions';
   const handleClick = () => {
     // Navigate to the "new" page
     window.location.href = '/new'; // Replace with your actual route
@@ -79,8 +78,9 @@ onMount( () => {
 
 </style>
 
-<Button></Button>
+<Button filled on:click={handleClick}>Create new poll</Button>
 <form id="form">
+  
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64" autofocus />
 </form>
