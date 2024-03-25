@@ -20,7 +20,15 @@ type PollResponse struct {
 	UUID string `json:"uuid"`
 }
 
-var polls = make(map[uuid.UUID]Poll)
+type ServePollRequest struct {
+	UUID string `json:"uuid"`
+}
+
+type ServePollResponse struct {
+	Poll Poll `json:"poll"`
+}
+
+var polls = make(map[string]Poll)
 
 var addr = flag.String("addr", ":8080", "http service address")
 
@@ -34,9 +42,32 @@ func savePoll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var id = uuid.New()
-	polls[id] = poll
+	polls[id.String()] = poll
 
 	pollResponse := PollResponse{UUID: id.String()}
+
+	jsonResponse, jsonError := json.Marshal(pollResponse)
+
+	if jsonError != nil {
+		fmt.Println("Unable to encode JSON")
+	}
+
+	fmt.Println(string(jsonResponse))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}
+
+func servePoll(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var id = params["id"]
+
+	fmt.Printf("frank: %s", id)
+
+	var poll = polls[id]
+
+	pollResponse := ServePollResponse{Poll: poll}
 
 	jsonResponse, jsonError := json.Marshal(pollResponse)
 
@@ -72,6 +103,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", serveHome)
+	r.HandleFunc("/poll/{id}", servePoll).Methods("GET")
 	r.HandleFunc("/poll", savePoll).Methods("POST")
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
