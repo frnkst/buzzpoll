@@ -2,8 +2,7 @@
 import { onMount } from 'svelte';
 import { Button } from 'attractions';
   const handleClick = () => {
-    // Navigate to the "new" page
-    window.location.href = '/new'; // Replace with your actual route
+    window.location.href = '/new';
   };
 
 

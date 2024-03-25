@@ -1,27 +1,41 @@
 <script lang="ts">
 	import { TextField, FormField, Button } from 'attractions';
 
-	function done() {}
+  let question: string;
+  
+	function done() {
+    saveData();
+    window.location.href = '/done';
+  }
+  
+  function saveData() {
+    const body = {
+      question,
+      answers: [
+        
+      ]
+    }
+    
+    fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json' }, body})
+
+  }
 
 	let numberOfAnswers = 1;
 
-	function addNewAnswer(index: number) {
-		console.log("frank", index);
-    if (index + 1 === numberOfAnswers) {
-      numberOfAnswers = numberOfAnswers + 1;
-     }
-    
-    
+	function addNewAnswer(currentAnswer: number) {
+		if (currentAnswer === numberOfAnswers) {
+			numberOfAnswers = numberOfAnswers + 1;
+		}
 	}
 </script>
 
-<FormField name="Question">
+<FormField name="Question" bind:value={question}>
 	<TextField />
 </FormField>
 
 {#each Array(numberOfAnswers) as _, index}
-	<FormField name="Answer 1">
-		<TextField on:input={() => addNewAnswer(index)} />
+	<FormField name="Answer {index + 1}">
+		<TextField on:input={() => addNewAnswer(index + 1)} />
 	</FormField>
 {/each}
 

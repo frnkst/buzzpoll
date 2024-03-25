@@ -1,16 +1,35 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"os"
 	"time"
-  "github.com/gorilla/handlers"
-  "github.com/gorilla/mux"
-  
 )
 
+type Poll struct {
+	Question string
+}
+
 var addr = flag.String("addr", ":8080", "http service address")
+
+func savePoll(w http.ResponseWriter, r *http.Request) {
+	var poll Poll
+
+	err := json.NewDecoder(r.Body).Decode(&poll)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, poll.Question)
+
+}
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -22,6 +41,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
 	http.ServeFile(w, r, "home.html")
 }
 
@@ -32,16 +52,21 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", serveHome)
+	r.HandleFunc("/poll", savePoll).Methods("POST")
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
-  })
-  
+	})
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	server := &http.Server{
 		Addr:              *addr,
 		ReadHeaderTimeout: 3 * time.Second,
-    Handler: handlers.CORS()(r),
+		Handler:           handlers.CORS(headersOk, originsOk, methodsOk)(r),
 	}
-  
+
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
