@@ -4,6 +4,9 @@
   let question: string;
   
 	function done() {
+
+		const a = "";
+
     saveData();
     window.location.href = '/done';
   }
@@ -13,7 +16,7 @@
       question: question
     });
     
-    await fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body})
+    fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body})
 
   }
 
