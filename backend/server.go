@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -57,8 +56,9 @@ func main() {
 		serveWs(hub, w, r)
 	})
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	// headersOk := handlers.AllowedHeaders([]string{"*"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	headersOk := handlers.AllowedHeaders([]string{"content-type", "username", "password"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	server := &http.Server{

@@ -9,14 +9,11 @@
   }
   
   function saveData() {
-    const body = {
-      question,
-      answers: [
-        
-      ]
-    }
+		const body = JSON.stringify({
+      question: question
+    });
     
-    fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json' }, body})
+    await fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body})
 
   }
 
@@ -29,8 +26,8 @@
 	}
 </script>
 
-<FormField name="Question" bind:value={question}>
-	<TextField />
+<FormField name="Question">
+	<TextField bind:value={question} />
 </FormField>
 
 {#each Array(numberOfAnswers) as _, index}
