@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
@@ -12,8 +13,14 @@ import (
 )
 
 type Poll struct {
-	Question string
+	Question string `json:"question"`
 }
+
+type PollResponse struct {
+	UUID string `json:"uuid"`
+}
+
+var polls = make(map[uuid.UUID]Poll)
 
 var addr = flag.String("addr", ":8080", "http service address")
 
@@ -26,8 +33,22 @@ func savePoll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, poll.Question)
+	var id = uuid.New()
+	polls[id] = poll
 
+	pollResponse := PollResponse{UUID: id.String()}
+
+	jsonResponse, jsonError := json.Marshal(pollResponse)
+
+	if jsonError != nil {
+		fmt.Println("Unable to encode JSON")
+	}
+
+	fmt.Println(string(jsonResponse))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
