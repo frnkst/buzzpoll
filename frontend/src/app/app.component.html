@@ -1,0 +1,19 @@
+<h3>Add Course Lessons:</h3>
+<div class="add-lessons-form" [formGroup]="form">
+  <ng-container formArrayName="lessons">
+    <ng-container *ngFor="let lessonForm of lessons.controls; let i = index">
+      <div class="lesson-form-row" [formGroup]="lessonForm">
+          <ion-input
+                 formControlName="title"
+                 placeholder="Lesson title">
+          </ion-input>
+          <ion-input formControlName="level"
+                      placeholder="Lesson level">
+          </ion-input>
+      </div>
+    </ng-container>
+  </ng-container>
+
+
+
+</div>
