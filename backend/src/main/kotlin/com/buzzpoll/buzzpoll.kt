@@ -1,10 +1,19 @@
 package com.buzzpoll
 
 import org.http4k.core.*
-import org.http4k.core.Method.POST
+import org.http4k.core.Method.*
+import org.http4k.core.Status.Companion.FORBIDDEN
+import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
+import org.http4k.filter.AllowAll
+import org.http4k.filter.CorsPolicy
+import org.http4k.filter.OriginPolicy
+import org.http4k.filter.ServerFilters
+import org.http4k.format.Jackson.auto
+import org.http4k.format.Jackson.json
 import org.http4k.lens.Path
 import org.http4k.routing.bind
+import org.http4k.routing.header
 import org.http4k.routing.routes
 import org.http4k.routing.websockets
 import org.http4k.routing.ws.bind as wsBind
@@ -14,17 +23,22 @@ import org.http4k.server.asServer
 import org.http4k.websocket.Websocket
 import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
+import java.lang.ProcessBuilder.Redirect.to
+import java.util.UUID;
+
+data class Poll(val question: String)
+
+data class NewPollResponse(val uuid: String)
+
+val allPolls = HashMap<UUID, Poll>()
 
 fun main() {
     val namePath = Path.of("name")
 
-    val corsMiddleware: Filter = Filter { next ->
-        {
-            Response(Status.OK)
-                .header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-        }
-    }
+
+    val a = ServerFilters.Cors(
+        CorsPolicy(methods = listOf(GET, POST, PUT, DELETE, OPTIONS),  headers = listOf("Origin", "X-Requested-With", "Content-Type", "Accept"), originPolicy = OriginPolicy.AllowAll())
+    )
 
     val ws = websockets(
         "/{name}" wsBind { req: Request ->
@@ -40,9 +54,28 @@ fun main() {
     )
 
     val app = routes(
-        "poll" bind POST to { Response(OK).body("you GET bob") }
-    ).withFilter(corsMiddleware)
+        "poll" bind POST to { request -> handleNewPoll(request = request) }
+    )
+
+    val final = a.then(app)
 
 
-    PolyHandler(app, ws).asServer(Jetty(8080)).start()
+    PolyHandler(final, ws).asServer(Jetty(8080)).start()
+}
+
+fun handleNewPoll(request: Request): Response {
+    println("frank")
+    val pollLens = Body.auto<Poll>().toLens()
+    val poll = pollLens(request)
+
+    val uuid = UUID.randomUUID();
+
+    allPolls[uuid] = poll;
+
+    val res = NewPollResponse(uuid = uuid.toString())
+    val jsonLens = Body.auto<NewPollResponse>().toLens()
+
+    println("frank2")
+
+    return Response(OK).with(jsonLens of res)
 }

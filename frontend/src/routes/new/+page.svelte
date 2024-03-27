@@ -11,13 +11,14 @@
     window.location.href = '/done';
   }
   
-  function saveData() {
+  async function saveData() {
 		const body = JSON.stringify({
       question: question
     });
     
-    fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body})
-
+    const a = await fetch("http://localhost:8080/poll", { method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body})
+		const b = await a.json();
+		console.log("b", b)
   }
 
 	let numberOfAnswers = 1;
