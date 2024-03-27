@@ -2,11 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="buzzpoll.buzzpoll" target="11" />
-      <module name="buzzpoll.buzzpoll.main" target="11" />
-      <module name="buzzpoll.buzzpoll.main~1" target="11" />
-      <module name="buzzpoll.buzzpoll.test" target="11" />
-      <module name="buzzpoll.buzzpoll.test~1" target="11" />
+      <module name="backend.buzzpoll" target="11" />
+      <module name="backend.buzzpoll.main" target="11" />
+      <module name="backend.buzzpoll.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
