@@ -20,20 +20,17 @@ import org.http4k.websocket.Websocket
 import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger
+import mu.KotlinLogging
 
 data class Poll(val question: String)
-
 data class NewPollResponse(val uuid: String)
 
-val allPolls = HashMap<UUID, Poll>()
-
-val id = AtomicInteger(0)
-val allWs = mutableMapOf<Int, Websocket>()
+private val activePolls = HashMap<UUID, Poll>()
+private val websocketClients = mutableMapOf<UUID, Websocket>()
+private val logger = KotlinLogging.logger {}
 
 fun main() {
     val namePath = Path.of("name")
-
 
     val corsFilter = ServerFilters.Cors(
         CorsPolicy(
@@ -45,9 +42,10 @@ fun main() {
     val ws = websockets(
         "/{name}" wsBind { req: Request ->
             WsResponse { ws: Websocket ->
-                val newId = id.addAndGet(1)
-                println("adding ws client $newId")
-                allWs[newId] = ws
+                val id = UUID.randomUUID();
+                logger.info { "Adding a new websocket client $id" }
+                websocketClients[id] = ws
+                logger.info { "Currently there are ${websocketClients.size} websocket clients connected" }
                 val name = namePath(req)
                 ws.send(WsMessage("hello $name"))
 
@@ -55,8 +53,9 @@ fun main() {
                     ws.send(WsMessage("$name is responding"))
                 }
                 ws.onClose {
-                    println("removing ws client $newId")
-                    allWs.remove(newId);
+                    logger.info { "Removing a websocket client $id" }
+                    websocketClients.remove(id)
+                    logger.info { "Currently there are ${websocketClients.size} websocket clients connected" }
                 }
             }
         }
@@ -78,19 +77,18 @@ fun handleNewPoll(request: Request): Response {
 
     val uuid = UUID.randomUUID();
 
-    allPolls[uuid] = poll;
+    activePolls[uuid] = poll;
 
     val res = NewPollResponse(uuid = uuid.toString())
     val jsonLens = Body.auto<NewPollResponse>().toLens()
 
-    try {
-        for (w in allWs.values) {
-            w.send(WsMessage("this is the uuid:$uuid"))
-        }
-    } catch (e: Error) {
-        println("error$e");
-    }
-
+    broadcastMessage(uuid)
 
     return Response(OK).with(jsonLens of res)
+}
+
+private fun broadcastMessage(uuid: UUID?) {
+    for (w in websocketClients.values) {
+        w.send(WsMessage("this is the uuid:$uuid"))
+    }
 }

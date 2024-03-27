@@ -53,6 +53,7 @@ dependencies {
     implementation("org.http4k:http4k-server-jetty:${http4kVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
     implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
     implementation("ch.qos.logback:logback-classic:1.4.14")
     testImplementation("org.http4k:http4k-testing-approval:${http4kVersion}")
     testImplementation("org.http4k:http4k-testing-hamkrest:${http4kVersion}")
