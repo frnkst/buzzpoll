@@ -3,11 +3,8 @@
 
   let question: string;
   
-	function done() {
-
-		const a = "";
-
-    saveData();
+	async function done() {
+    await saveData();
     window.location.href = '/done';
   }
   
@@ -28,7 +25,7 @@
 			numberOfAnswers = numberOfAnswers + 1;
 		}
 	}
-</script>
+</script>1
 
 <FormField name="Question">
 	<TextField bind:value={question} />

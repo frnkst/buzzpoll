@@ -52,6 +52,8 @@ dependencies {
     implementation("org.http4k:http4k-format-jackson:${http4kVersion}")
     implementation("org.http4k:http4k-server-jetty:${http4kVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("ch.qos.logback:logback-classic:1.4.14")
     testImplementation("org.http4k:http4k-testing-approval:${http4kVersion}")
     testImplementation("org.http4k:http4k-testing-hamkrest:${http4kVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
