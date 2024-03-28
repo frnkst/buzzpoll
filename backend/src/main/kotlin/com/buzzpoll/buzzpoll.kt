@@ -26,6 +26,7 @@ import java.util.UUID;
 import mu.KotlinLogging
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.routing.path
+import java.lang.Integer.parseInt
 import java.util.concurrent.atomic.AtomicInteger
 
 private val pollNumber = AtomicInteger();
@@ -74,7 +75,7 @@ fun main() {
                 request -> getPollById(id = request.path("id"))
         },
 
-        "vote}" bind POST to {
+        "vote" bind POST to {
                 request -> vote(request = request)
         }
     )
@@ -84,8 +85,11 @@ fun main() {
 }
 
 fun getPollById(id: String?): Response {
-    val poll = activePolls[id]
+    if (id === null) {
+        return Response(NOT_FOUND)
+    }
 
+    val poll = activePolls.find { it.id == parseInt(id) }
     if (poll === null) {
         return Response(NOT_FOUND)
     }
@@ -98,9 +102,13 @@ fun vote(request: Request): Response {
     val voteLens = Body.auto<VoteRequest>().toLens()
     val vote = voteLens(request)
 
-    val poll = activePolls.find { it.id == vote.pollId }
-    val answer = poll?.answers?.get(vote.answer.id)
-    // todo add a new vote to this answer
+    val poll = activePolls.find { it.id == vote.id }
+    val answer = poll?.answers?.find { it.id == vote.answer.id }
+    answer?.votes?.add(Vote(client = "abc"))
+
+    // broadcast new vote to websocket
+
+    return Response(OK)
 }
 
 fun handleNewPoll(request: Request): Response {

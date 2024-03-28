@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {lastValueFrom} from "rxjs";
 
 export type Poll = {
+  id?: number,
   question: string,
   answers: Answer[];
 }
@@ -10,14 +11,19 @@ export type Poll = {
 export type Answer = {
   id: string,
   text: string
+  votes?: Vote[]
+}
+
+export type Vote = {
+  clientId: string
 }
 
 export type PollResponse = {
   pollId: string
 }
 
-export type Vote = {
-  pollId: string,
+export type VoteRequest = {
+  id: number,
   answer: Answer
 }
 
@@ -32,14 +38,14 @@ export class PollService {
   }
 
   createPoll(poll: Poll) {
-    return lastValueFrom(this.httpClient.post<PollResponse>(`${this.host}/poll`, poll));
+    return lastValueFrom(this.httpClient.post<Poll>(`${this.host}/poll`, poll));
   }
 
-  getPoll(pollId: String) {
-    return lastValueFrom(this.httpClient.get<Poll>(`${this.host}/poll/${pollId}`));
+  getPoll(id: number) {
+    return lastValueFrom(this.httpClient.get<Poll>(`${this.host}/poll/${id}`));
   }
 
-  vote(vote: Vote) {
+  vote(vote: VoteRequest) {
     return lastValueFrom(this.httpClient.post(`${this.host}/vote/`, vote));
   }
 }

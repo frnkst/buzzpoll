@@ -2,14 +2,14 @@ import {Component} from '@angular/core';
 import {RouterModule, RouterOutlet} from '@angular/router';
 import {IonButton, IonContent, IonInput, IonItem, IonList} from '@ionic/angular/standalone';
 import {FormArray, FormBuilder, ReactiveFormsModule} from "@angular/forms";
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import {Poll, PollService} from "../services/poll-service.service";
 import {QRCodeModule} from 'angularx-qrcode';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, IonButton, IonContent, IonInput, IonList, IonItem, ReactiveFormsModule, NgForOf, QRCodeModule, RouterModule],
+  imports: [RouterOutlet, IonButton, IonContent, IonInput, IonList, IonItem, ReactiveFormsModule, NgForOf, QRCodeModule, RouterModule, NgIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -20,7 +20,7 @@ export class AppComponent {
     answers: this.formBuilder.array([''])
   });
 
-  pollId = '';
+  id: number | undefined;
 
   constructor(private formBuilder: FormBuilder, private pollService: PollService) {
   }
@@ -44,15 +44,14 @@ export class AppComponent {
       }
 
       let answers = a.filter(a => a !== '')
-      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer as string}))
+      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer as string, votes: []}))
 
       const poll = {
         question: this.form.value.question,
         answers: b
       };
 
-
-      this.pollId = (await this.pollService.createPoll(poll)).pollId;
+      this.id = (await this.pollService.createPoll(poll)).id;
     }
 
   }

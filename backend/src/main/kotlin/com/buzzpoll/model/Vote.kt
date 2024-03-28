@@ -1,7 +1,8 @@
 package com.buzzpoll.model
 
-data class VoteRequest (
- val pollId: Int,
- val answer: Answer
+data class VoteRequest(
+    val id: Int,
+    val answer: Answer,
+    val clientId: String?
 )
 

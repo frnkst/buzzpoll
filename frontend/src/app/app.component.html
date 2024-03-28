@@ -10,12 +10,12 @@
         (ionInput)="addAnswer(i)"
         [formControlName]="i"
         type="text"
-        />
+      ></ion-input>
     </div>
   </div>
 
   <ion-button type="submit" [disabled]="!form.valid">Submit</ion-button>
-  <qrcode [qrdata]="pollId" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
+  <qrcode *ngIf="id" [qrdata]="id!!.toString(10)" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
 
-  <a [routerLink]="['/vote', pollId]">click here</a>
+  <a [routerLink]="['/vote', id]">click here</a>
 </form>
