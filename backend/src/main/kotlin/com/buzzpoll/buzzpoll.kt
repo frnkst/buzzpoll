@@ -21,11 +21,34 @@ import org.http4k.websocket.WsMessage
 import org.http4k.websocket.WsResponse
 import java.util.UUID;
 import mu.KotlinLogging
+import org.http4k.core.Status.Companion.NOT_FOUND
+import org.http4k.routing.path
+import java.util.concurrent.atomic.AtomicInteger
 
-data class Poll(val question: String)
-data class NewPollResponse(val uuid: String)
+data class Poll(val question: String, val answers: Array<String>) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-private val activePolls = HashMap<UUID, Poll>()
+        other as Poll
+
+        if (question != other.question) return false
+        if (!answers.contentEquals(other.answers)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = question.hashCode()
+        result = 31 * result + answers.contentHashCode()
+        return result
+    }
+}
+
+data class NewPollResponse(val id: String)
+
+private val pollNumber = AtomicInteger();
+private val activePolls = HashMap<String, Poll>()
 private val websocketClients = mutableMapOf<UUID, Websocket>()
 private val logger = KotlinLogging.logger {}
 
@@ -64,11 +87,26 @@ fun main() {
     val app = routes(
         "poll" bind POST to {
             request -> handleNewPoll(request = request)
+        },
+
+        "poll/{id}" bind GET to {
+                request -> getPollById(id = request.path("id"))
         }
     )
 
     val finalApp = corsFilter.then(app)
     PolyHandler(finalApp, ws).asServer(Jetty(8080)).start()
+}
+
+fun getPollById(id: String?): Response {
+    val poll = activePolls[id]
+
+    if (poll === null) {
+        return Response(NOT_FOUND)
+    }
+
+    val jsonLens = Body.auto<Poll>().toLens()
+    return Response(OK).with(jsonLens of poll)
 }
 
 fun handleNewPoll(request: Request): Response {
@@ -77,9 +115,11 @@ fun handleNewPoll(request: Request): Response {
 
     val uuid = UUID.randomUUID();
 
-    activePolls[uuid] = poll;
+    val currentNumer = pollNumber.addAndGet(1)
 
-    val res = NewPollResponse(uuid = uuid.toString())
+    activePolls[currentNumer.toString()] = poll
+
+    val res = NewPollResponse(id = currentNumer.toString())
     val jsonLens = Body.auto<NewPollResponse>().toLens()
 
     broadcastMessage(uuid)

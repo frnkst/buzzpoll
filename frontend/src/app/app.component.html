@@ -16,7 +16,7 @@
 
   <ion-button type="submit" [disabled]="!form.valid">Submit</ion-button>
 
-  <qrcode [qrdata]="uuid" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
+  <qrcode [qrdata]="id" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
 
-  <a [routerLink]="['/vote', uuid]">click here</a>
+  <a [routerLink]="['/vote', id]">click here</a>
 </form>

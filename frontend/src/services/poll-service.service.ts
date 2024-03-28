@@ -8,7 +8,7 @@ export type Poll = {
 }
 
 export type PollResponse = {
-  uuid: string
+  id: string
 }
 
 @Injectable({
@@ -23,5 +23,9 @@ export class PollService {
 
   createPoll(poll: Poll) {
     return lastValueFrom(this.httpClient.post<PollResponse>(`${this.host}/poll`, poll));
+  }
+
+  getPoll(id: String) {
+    return lastValueFrom(this.httpClient.get<Poll>(`${this.host}/poll/${id}`));
   }
 }

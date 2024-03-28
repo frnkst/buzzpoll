@@ -20,7 +20,7 @@ export class AppComponent {
     answers: this.formBuilder.array([''])
   });
 
-  uuid = '';
+  id = '';
 
   constructor(private formBuilder: FormBuilder, private pollService: PollService) {
   }
@@ -38,7 +38,7 @@ export class AppComponent {
   async onSubmit() {
     if (this.form.valid) {
       const formData = this.form.value as Poll;
-      this.uuid = (await this.pollService.createPoll(formData)).uuid;
+      this.id = (await this.pollService.createPoll(formData)).id;
     }
 
   }
