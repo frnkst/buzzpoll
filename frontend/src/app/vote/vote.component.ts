@@ -15,23 +15,22 @@ import {IonButton} from "@ionic/angular/standalone";
 export class VoteComponent  implements OnInit {
 
   data: Poll | undefined;
+  pollId = '';
 
   constructor(private pollService: PollService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.paramMap.pipe(
       switchMap(params => {
-        return this.pollService.getPoll(params.get('id')!!)
+        this.pollId = params.get('pollId')!!;
+        return this.pollService.getPoll(this.pollId)
       })
     ).subscribe((data) => this.data = data)
 
   }
 
-  vote(answer: Answer) {
-    const vote: Vote = {
-      pollId: data.pollId,
-      answer: answer.id
-    }
-    return this.pollService.vote()
+  async vote(answer: Answer) {
+    await this.pollService.vote({ pollId: this.pollId, answer})
+
   }
 }

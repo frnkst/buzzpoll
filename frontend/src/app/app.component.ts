@@ -20,7 +20,7 @@ export class AppComponent {
     answers: this.formBuilder.array([''])
   });
 
-  id = '';
+  pollId = '';
 
   constructor(private formBuilder: FormBuilder, private pollService: PollService) {
   }
@@ -44,7 +44,7 @@ export class AppComponent {
       }
 
       let answers = a.filter(a => a !== '')
-      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer}))
+      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer as string}))
 
       const poll = {
         question: this.form.value.question,
@@ -52,7 +52,7 @@ export class AppComponent {
       };
 
 
-      await this.pollService.createPoll(poll);
+      this.pollId = (await this.pollService.createPoll(poll)).pollId;
     }
 
   }

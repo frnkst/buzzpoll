@@ -3,7 +3,7 @@
 </h1>
 
 <div style="display: flex">
-  @for (answer of data?.answers; track answer) {
-  <ion-button (click)="vote(answer)">{{ answer }}</ion-button>
+  @for (answer of data?.answers; track answer.id) {
+  <ion-button (click)="vote(answer)">{{ answer.text }}</ion-button>
   }
 </div>

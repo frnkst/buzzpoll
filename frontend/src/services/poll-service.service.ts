@@ -13,12 +13,12 @@ export type Answer = {
 }
 
 export type PollResponse = {
-  id: string
+  pollId: string
 }
 
 export type Vote = {
   pollId: string,
-  answerId: string
+  answer: Answer
 }
 
 @Injectable({
