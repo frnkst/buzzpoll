@@ -15,7 +15,6 @@
   </div>
 
   <ion-button type="submit" [disabled]="!form.valid">Submit</ion-button>
-
   <qrcode [qrdata]="id" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
 
   <a [routerLink]="['/vote', id]">click here</a>

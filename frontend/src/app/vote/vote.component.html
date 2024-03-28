@@ -1,7 +1,9 @@
-<p>
-  vote works!
-
+<h1>
   {{ data?.question }}
+</h1>
 
-  {{ data?.answers }}
-</p>
+<div style="display: flex">
+  @for (answer of data?.answers; track answer) {
+  <ion-button (click)="vote(answer)">{{ answer }}</ion-button>
+  }
+</div>

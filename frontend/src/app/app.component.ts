@@ -37,9 +37,32 @@ export class AppComponent {
 
   async onSubmit() {
     if (this.form.valid) {
-      const formData = this.form.value as Poll;
-      this.id = (await this.pollService.createPoll(formData)).id;
+      const a = this.form.value.answers;
+
+      if (!a || a.length === 0 || !this.form.value.question) {
+        return;
+      }
+
+      let answers = a.filter(a => a !== '')
+      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer}))
+
+      const poll = {
+        question: this.form.value.question,
+        answers: b
+      };
+
+
+      await this.pollService.createPoll(poll);
     }
 
+  }
+
+  private createPoll(formDate: Partial<Poll>): Poll {
+    let answers = formDate.answers?.filter(a => a.text !== '')
+    answers = answers?.map((answer, id) => ({ id: id.toString(), text: answer.text}))
+    return {
+      question: formDate.question!,
+      answers: answers!
+    };
   }
 }
