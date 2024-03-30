@@ -42,7 +42,7 @@ export class PollService {
   }
 
   getPoll(id: number) {
-    return lastValueFrom(this.httpClient.get<Poll>(`${this.host}/poll/${id}`));
+    return this.httpClient.get<Poll>(`${this.host}/poll/${id}`);
   }
 
   vote(vote: VoteRequest) {

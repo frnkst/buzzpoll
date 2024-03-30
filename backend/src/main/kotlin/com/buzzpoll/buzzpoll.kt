@@ -107,6 +107,7 @@ fun vote(request: Request): Response {
     answer?.votes?.add(Vote(client = "abc"))
 
     // broadcast new vote to websocket
+    broadcastMessage(poll!!)
 
     return Response(OK)
 }
@@ -120,8 +121,8 @@ fun handleNewPoll(request: Request): Response {
     return Response(OK).with(pollLens of updatedPoll)
 }
 
-private fun broadcastMessage(uuid: UUID?) {
+private fun broadcastMessage(poll: Poll) {
     for (w in websocketClients.values) {
-        w.send(WsMessage("this is the uuid:$uuid"))
+        w.send(WsMessage(poll.toString()))
     }
 }

@@ -20,6 +20,7 @@
     "@angular/router": "^17.3.0",
     "@ionic/angular": "^7.8.2",
     "angularx-qrcode": "^17.0.0",
+    "ngx-socket-io": "^4.6.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
