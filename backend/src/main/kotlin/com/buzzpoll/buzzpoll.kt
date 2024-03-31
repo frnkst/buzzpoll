@@ -52,11 +52,12 @@ fun main() {
                 websocketClients[id] = ws
                 logger.info { "Currently there are ${websocketClients.size} websocket clients connected" }
                 val name = namePath(req)
-                ws.send(WsMessage("hello $name"))
+                //ws.send(WsMessage("hello $name"))
 
                 ws.onMessage {
-                    ws.send(WsMessage("$name is responding"))
+                    //ws.send(WsMessage("$name is responding"))
                 }
+
                 ws.onClose {
                     logger.info { "Removing a websocket client $id" }
                     websocketClients.remove(id)
@@ -122,7 +123,10 @@ fun handleNewPoll(request: Request): Response {
 }
 
 private fun broadcastMessage(poll: Poll) {
+    val pollLens = WsMessage.auto<Poll>().toLens()
+
     for (w in websocketClients.values) {
-        w.send(WsMessage(poll.toString()))
+
+        w.send(pollLens(poll))
     }
 }

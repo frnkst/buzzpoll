@@ -1,8 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Poll, PollService} from "../../services/poll-service.service";
+import {Poll} from "../../services/poll-service.service";
 import {NgIf} from "@angular/common";
 import {WebsocketService} from "../../services/websocket.service";
-import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Component({
   selector: 'app-results',
@@ -13,18 +12,20 @@ import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
     NgIf
   ]
 })
-export class ResultsComponent implements OnInit {
+export class ResultsComponent implements OnInit, OnDestroy {
   @Input() id = '';
   poll: Poll | undefined;
 
-  constructor(private pollService: PollService, private websocketService: WebsocketService) {
+  constructor(private websocketService: WebsocketService) {
+    this.websocketService.connect();
   }
 
   ngOnInit() {
-    this.websocketService.connect();
-    this.websocketService.getMessage().subscribe(message => console.log("got a real emssage", message));
-
+    this.websocketService.sendMessage("hi frank");
+    this.websocketService.getMessages().subscribe();
   }
 
-
+  ngOnDestroy(): void {
+    //this.websocketService.close();
+  }
 }
