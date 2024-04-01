@@ -77,6 +77,10 @@ fun main() {
                 request -> getPollById(id = request.path("id"))
         },
 
+        "poll" bind GET to {
+                request -> getAllPolls()
+        },
+
         "vote" bind POST to {
                 request -> vote(request = request)
         }
@@ -84,6 +88,11 @@ fun main() {
 
     val finalApp = corsFilter.then(app)
     PolyHandler(finalApp, ws).asServer(Jetty(8080)).start()
+}
+
+fun getAllPolls(): Response {
+    val jsonLens = Body.auto<List<Poll>>().toLens()
+    return Response(OK).with(jsonLens of activePolls)
 }
 
 fun getPollById(id: String?): Response {

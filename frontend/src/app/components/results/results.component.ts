@@ -1,8 +1,8 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Poll} from "../../services/poll-service.service";
+
 import {NgIf} from "@angular/common";
-import {WebsocketService} from "../../services/websocket.service";
-import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
+import {WebsocketService} from "../../../services/websocket.service";
+import {Poll} from "../../../services/poll-service.service";
 
 @Component({
   selector: 'app-results',

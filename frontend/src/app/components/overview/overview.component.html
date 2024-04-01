@@ -1,0 +1,22 @@
+<h1>Welcome to buzzpoll</h1>
+
+@for(poll of polls; track poll.id) {
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ 'add title here' }}</ion-card-title>
+      <ion-card-subtitle>{{ poll.question }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ 'add description here' }}
+    </ion-card-content>
+  </ion-card>
+}
+
+<a [routerLink]="['/create']">
+  <ion-fab>
+    <ion-fab-button >
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</a>

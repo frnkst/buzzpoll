@@ -45,6 +45,10 @@ export class PollService {
     return this.httpClient.get<Poll>(`${this.host}/poll/${id}`);
   }
 
+  getPolls() {
+    return this.httpClient.get<Poll[]>(`${this.host}/poll`);
+  }
+
   vote(vote: VoteRequest) {
     return lastValueFrom(this.httpClient.post(`${this.host}/vote/`, vote));
   }
