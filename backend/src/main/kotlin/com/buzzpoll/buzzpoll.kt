@@ -34,6 +34,7 @@ private val activePolls = mutableListOf<Poll>()
 private val websocketClients = mutableMapOf<UUID, Websocket>()
 private val logger = KotlinLogging.logger {}
 
+
 fun main() {
     val namePath = Path.of("name")
 
