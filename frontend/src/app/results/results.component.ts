@@ -2,6 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Poll} from "../../services/poll-service.service";
 import {NgIf} from "@angular/common";
 import {WebsocketService} from "../../services/websocket.service";
+import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Component({
   selector: 'app-results',
@@ -22,10 +23,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.sendMessage("hi frank");
-    this.websocketService.getMessages().subscribe();
+    this.websocketService.getMessages().subscribe(msg => console.log("real msg", msg));
   }
 
   ngOnDestroy(): void {
-    //this.websocketService.close();
+    this.websocketService.close();
   }
 }
