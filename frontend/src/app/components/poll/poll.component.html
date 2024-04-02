@@ -1,12 +1,11 @@
-<ion-tabs>
-  <ion-tab-bar slot="top">
-    <ion-tab-button tab="vote">
-      <ion-icon name="play-circle"></ion-icon>
-      Listen Now
-    </ion-tab-button>
-    <ion-tab-button tab="results">
-      <ion-icon name="radio"></ion-icon>
-      Radio
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>
+<h1>
+  {{ poll?.question }}
+</h1>
+
+<qrcode *ngIf="id" [qrdata]="currentUrl" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
+
+<div style="display: flex">
+  @for (answer of poll?.answers; track answer.id) {
+    {{ answer.text }}
+  }
+</div>

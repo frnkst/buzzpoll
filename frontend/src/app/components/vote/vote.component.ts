@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-
 import {ActivatedRoute, Router} from "@angular/router";
 import {switchMap} from "rxjs";
-import {IonButton, IonTabBar, IonTabButton, IonTabs} from "@ionic/angular/standalone";
+import {IonButton} from "@ionic/angular/standalone";
 import {ResultsComponent} from "../results/results.component";
 import {Answer, Poll, PollService} from "../../../services/poll-service.service";
 

@@ -7,6 +7,8 @@ import {
   IonCardContent,
   IonFab, IonFabButton, IonIcon
 } from '@ionic/angular/standalone';
+import { add } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 import {Poll, PollService} from "../../../services/poll-service.service";
 import {Router, RouterModule} from "@angular/router";
 
@@ -23,6 +25,7 @@ export class OverviewComponent  implements OnInit {
   polls: Poll[] | undefined;
 
   constructor(private pollService: PollService) {
+    addIcons({add});
   }
 
   ngOnInit() {
