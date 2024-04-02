@@ -1,6 +1,7 @@
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
+import {Poll} from "./poll-service.service";
 
 @Injectable({
   providedIn: 'root'

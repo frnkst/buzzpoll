@@ -2,9 +2,11 @@
   {{ data?.question }}
 </h1>
 
-<div style="display: flex">
+<div>
   @for (answer of data?.answers; track answer.id) {
-  <ion-button (click)="vote(answer)">{{ answer.text }}</ion-button>
+    <div>
+      <ion-button (click)="vote(answer)" style="width: 100%">{{ answer.text }}</ion-button>
+    </div>
   }
 </div>
 
