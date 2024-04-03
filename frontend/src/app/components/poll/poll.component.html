@@ -2,10 +2,3 @@
   {{ poll?.question }}
 </h1>
 
-<qrcode *ngIf="id" [qrdata]="currentUrl" [width]="256 * 2" [errorCorrectionLevel]="'M'"></qrcode>
-
-<div style="display: flex">
-  @for (answer of poll?.answers; track answer.id) {
-    {{ answer.text }}
-  }
-</div>

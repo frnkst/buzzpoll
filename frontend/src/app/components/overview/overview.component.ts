@@ -5,7 +5,7 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonCardContent,
-  IonFab, IonFabButton, IonIcon
+  IonFab, IonFabButton, IonIcon, IonButton
 } from '@ionic/angular/standalone';
 import { add } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -19,7 +19,7 @@ import {Router, RouterModule} from "@angular/router";
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
   standalone: true,
-  imports: [IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonFab, IonFabButton, IonIcon, RouterModule, IonFabButton, IonIcon, IonFab]
+  imports: [IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonFab, IonFabButton, IonIcon, RouterModule, IonFabButton, IonIcon, IonFab, IonButton]
 })
 export class OverviewComponent  implements OnInit {
   polls: Poll[] | undefined;

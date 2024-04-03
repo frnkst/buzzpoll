@@ -4,6 +4,8 @@ import {NgIf} from "@angular/common";
 import {WebsocketService} from "../../../services/websocket.service";
 import {Poll} from "../../../services/poll-service.service";
 import {CanvasJS, CanvasJSAngularChartsModule, CanvasJSChart} from "@canvasjs/angular-charts";
+import {QRCodeModule} from "angularx-qrcode";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-results',
@@ -12,20 +14,20 @@ import {CanvasJS, CanvasJSAngularChartsModule, CanvasJSChart} from "@canvasjs/an
   styleUrls: ['./results.component.scss'],
   imports: [
     NgIf,
-    CanvasJSAngularChartsModule
+    CanvasJSAngularChartsModule,
+    QRCodeModule
   ]
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   @Input() id = '';
-  //@ViewChild("chart") chart: CanvasJSChart | undefined
+
   poll?: Poll;
-
   chart: any;
+  currentUrl: string;
 
-  chartOptions: any;
-
-  constructor(private websocketService: WebsocketService) {
+  constructor(private websocketService: WebsocketService, private router: Router) {
     this.websocketService.connect();
+    this.currentUrl = this.router.url + "/vote";
   }
 
   ngOnInit() {
