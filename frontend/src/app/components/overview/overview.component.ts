@@ -11,6 +11,7 @@ import { add } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import {Poll, PollService} from "../../../services/poll-service.service";
 import {Router, RouterModule} from "@angular/router";
+import {QRCodeModule} from "angularx-qrcode";
 
 
 
@@ -19,7 +20,7 @@ import {Router, RouterModule} from "@angular/router";
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
   standalone: true,
-  imports: [IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonFab, IonFabButton, IonIcon, RouterModule, IonFabButton, IonIcon, IonFab, IonButton]
+  imports: [IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonFab, IonFabButton, IonIcon, RouterModule, IonFabButton, IonIcon, IonFab, IonButton, QRCodeModule]
 })
 export class OverviewComponent  implements OnInit {
   polls: Poll[] | undefined;

@@ -1,18 +1,15 @@
-<h1>Welcome to buzzpoll</h1>
+<h1>buzzpoll</h1>
 
 @for(poll of polls; track poll.id) {
-  <ion-card>
+  <ion-card [routerLink]="['poll', poll.id, 'results']">
     <ion-card-header>
       <ion-card-title>{{ 'add title here' }}</ion-card-title>
       <ion-card-subtitle>{{ poll.question }}</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
-      {{ 'add description here' }}
+      <qrcode [qrdata]="'poll' + poll.id + 'results'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
     </ion-card-content>
-
-    <ion-button fill="clear" [routerLink]="['poll/6/vote']">Vote</ion-button>
-    <ion-button fill="clear" [routerLink]="['poll/6/results']">Results</ion-button>
   </ion-card>
 }
 

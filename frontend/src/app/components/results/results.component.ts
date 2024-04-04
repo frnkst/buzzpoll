@@ -6,6 +6,7 @@ import {Poll} from "../../../services/poll-service.service";
 import {CanvasJS, CanvasJSAngularChartsModule, CanvasJSChart} from "@canvasjs/angular-charts";
 import {QRCodeModule} from "angularx-qrcode";
 import {Router} from "@angular/router";
+import {VoteComponent} from "../vote/vote.component";
 
 @Component({
   selector: 'app-results',
@@ -15,7 +16,8 @@ import {Router} from "@angular/router";
   imports: [
     NgIf,
     CanvasJSAngularChartsModule,
-    QRCodeModule
+    QRCodeModule,
+    VoteComponent
   ]
 })
 export class ResultsComponent implements OnInit, OnDestroy {

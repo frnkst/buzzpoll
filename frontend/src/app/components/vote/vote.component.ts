@@ -10,12 +10,12 @@ import {Answer, Poll, PollService} from "../../../services/poll-service.service"
   templateUrl: './vote.component.html',
   styleUrls: ['./vote.component.scss'],
   standalone: true,
-  imports: [IonButton, ResultsComponent]
+  imports: [IonButton]
 })
 export class VoteComponent  implements OnInit {
 
-  data: Poll | undefined;
-  id: number | undefined;
+  data?: Poll;
+  id?: number;
 
   constructor(private pollService: PollService, private route: ActivatedRoute, private router: Router) { }
 
