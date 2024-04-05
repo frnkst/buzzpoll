@@ -2,10 +2,11 @@
 
 html {
   background-color: #1f1f1f;
+  overflow-y: scroll;
 }
 
 * {
-  font-family: "Proza Libre";
+  font-family: "Fira Sans", sans-serif;
   font-weight: 400;
   font-style: normal;
 }

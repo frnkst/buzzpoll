@@ -1,22 +1,12 @@
 <h1>buzzpoll</h1>
 
+<app-button [routerLink]="['/create']"></app-button>
+
 @for(poll of polls; track poll.id) {
-  <ion-card [routerLink]="['poll', poll.id, 'results']">
-    <ion-card-header>
-      <ion-card-title>{{ 'add title here' }}</ion-card-title>
-      <ion-card-subtitle>{{ poll.question }}</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      <qrcode [qrdata]="'poll' + poll.id + 'results'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
-    </ion-card-content>
-  </ion-card>
+  <div [routerLink]="['poll', poll.id, 'results']" class="card">
+    <div class="card-info">
+      {{ poll.question }}
+      <qrcode [colorDark]="'#5ed5d1ff'" [colorLight]="'#00000000'" [qrdata]="'poll' + poll.id + 'results'"  [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+    </div>
+  </div>
 }
-
-<a [routerLink]="['/create']">
-  <ion-fab>
-    <ion-fab-button >
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</a>
