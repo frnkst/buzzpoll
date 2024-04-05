@@ -49,7 +49,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.websocketService.sendMessage("hi frank");
     this.websocketService.getMessages().subscribe(message => {
       this.poll = message as unknown as Poll;
-      const data = this.poll.answers.map(a => ({label: a.text, y: a.votes?.length ? a.votes?.length + 1 : 0 }));
+      const data = this.poll.answers.map(a => ({label: a.text, y: a.votes?.length ? a.votes?.length : 0 }));
       this.chart.options.data[0].dataPoints = data;
       this.chart.render();
     });
