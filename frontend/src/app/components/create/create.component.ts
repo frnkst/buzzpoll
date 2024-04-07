@@ -6,13 +6,14 @@ import {NgForOf, NgIf} from "@angular/common";
 import {QRCodeModule} from "angularx-qrcode";
 import {Router, RouterModule} from "@angular/router";
 import {OverviewComponent} from "../overview/overview.component";
+import {ButtonComponent} from "../button/button.component";
 
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],
   standalone: true,
-  imports: [IonButton, IonContent, IonInput, IonList, IonItem, ReactiveFormsModule, NgForOf, QRCodeModule, RouterModule, NgIf, OverviewComponent]
+  imports: [IonButton, IonContent, IonInput, IonList, IonItem, ReactiveFormsModule, NgForOf, QRCodeModule, RouterModule, NgIf, OverviewComponent, ButtonComponent]
 })
 export class CreateComponent {
 
@@ -38,34 +39,21 @@ export class CreateComponent {
 
   async onSubmit() {
     if (this.form.valid) {
-      const a = this.form.value.answers;
-
-      if (!a || a.length === 0 || !this.form.value.question) {
+      const answers = this.form.value.answers;
+      if (!answers || answers.length === 0 || !this.form.value.question) {
         return;
       }
 
-      let answers = a.filter(a => a !== '')
-      const b  = answers.map((answer, id) => ({ id: id.toString(), text: answer as string, votes: []}))
+      let filteredAnswers = answers.filter(a => a !== '')
+      const filteredAnswersWithVotes  = filteredAnswers.map((answer, id) => ({ id: id.toString(), text: answer as string, votes: []}))
 
       const poll = {
         question: this.form.value.question,
-        answers: b
+        answers: filteredAnswersWithVotes
       };
 
       this.id = (await this.pollService.createPoll(poll)).id;
-
-      await this.router.navigateByUrl("/poll/" + this.id);
+      await this.router.navigateByUrl("/poll/" + this.id + "/results");
     }
-
   }
-
-  private createPoll(formDate: Partial<Poll>): Poll {
-    let answers = formDate.answers?.filter(a => a.text !== '')
-    answers = answers?.map((answer, id) => ({ id: id.toString(), text: answer.text}))
-    return {
-      question: formDate.question!,
-      answers: answers!
-    };
-  }
-
 }

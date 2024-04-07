@@ -5,7 +5,7 @@
 <div>
   @for (answer of data?.answers; track answer.id) {
     <div>
-      <ion-button (click)="vote(answer)" style="width: 100%">{{ answer.text }}</ion-button>
+      <app-button (click)="vote(answer)" style="width: 100%; margin-bottom: 10px; display: block" [label]="answer.text"></app-button>
     </div>
   }
 </div>

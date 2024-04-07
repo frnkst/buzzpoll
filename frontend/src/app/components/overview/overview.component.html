@@ -3,13 +3,15 @@
   <span class="pacifico-regular secondary-color">poll</span>
 </h1>
 
-<app-button [routerLink]="['/create']"></app-button>
+<app-button [routerLink]="['/create']" label="Add new"></app-button>
 
 @for(poll of polls; track poll.id) {
   <div [routerLink]="['poll', poll.id, 'results']" class="card">
     <div class="card-info">
-      {{ poll.question }}
-      <qrcode [colorDark]="'#5ed5d1ff'" [colorLight]="'#00000000'" [qrdata]="'poll' + poll.id + 'results'"  [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+      <div class="inside">
+        {{ poll.question }}
+        <qrcode [colorDark]="'#5ed5d1ff'" [colorLight]="'#00000000'" [qrdata]="'poll' + poll.id + 'results'"  [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+      </div>
     </div>
   </div>
 }
