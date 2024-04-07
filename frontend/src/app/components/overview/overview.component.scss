@@ -1,8 +1,8 @@
 h1 {
   text-align: center;
   font-size: 52px;
-
 }
+
 app-button {
  margin-top: 40px;
  margin-bottom: 40px;
@@ -10,11 +10,11 @@ app-button {
 }
 
 .card {
-  --background: linear-gradient(to left, #709fdc 0%, #d768e0 100%);
+  --background: linear-gradient(to left, var(--primary-color) 0%, var(--secondary-color) 100%);
   padding: 5px;
   border-radius: 1rem;
   overflow: visible;
-  background: #709fdc;
+  background: var(--primary-color);
   background: var(--background);
   position: relative;
   z-index: 1;
@@ -32,13 +32,13 @@ app-button {
   width: 100%;
   transform: scale(0.8);
   filter: blur(25px);
-  background: #709fdc;
+  background: var(--primary-color);
   transition: opacity .5s;
 }
 
 .card-info {
   --color: #181818;
-  --font-color: #f7ba2b;
+  --font-color: var(--primary-color);
   background: var(--color);
   color: var(--font-color);
   display: flex;

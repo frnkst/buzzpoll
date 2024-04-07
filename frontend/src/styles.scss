@@ -1,8 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --primary-color: #86efec;
+  --secondary-color: honeydew;
+}
+
+.primary-color {
+  color: var(--primary-color)
+}
+
+.secondary-color {
+  color: #ffffff;
+}
+
 html {
   background-color: #1f1f1f;
   overflow-y: scroll;
+}
+
+.pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
 * {
