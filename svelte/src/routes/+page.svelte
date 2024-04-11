@@ -9,7 +9,7 @@
 </svelte:head>
 
 <section>
-  <h1 class="text-3xl text-amber-800">buzzpoll</h1>
+  <h1 class="text-6xl text-emerald-500 pacifico-regular">buzzpoll</h1>
 
 	<Polls />
 </section>
