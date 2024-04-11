@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SvgQR from '@svelte-put/qr/svg/QR.svelte';
+  import { qr } from '@svelte-put/qr/svg';
   import type { Poll } from "./model.svelte";
 
   const logo = 'https://svelte-put.vnphanquang.com/images/svelte-put-logo.svg';
@@ -11,7 +11,6 @@
     const response = await fetch(endpoint);
     const data  = await response.json();
     polls = data.map(poll => ({...poll, link: `poll/${poll.id}/results`}));
-    console.log("frank", polls)
   });
 </script>
 
@@ -23,7 +22,14 @@
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.
       </p>
     </div>
-    { poll.link }
-    <SvgQR {'avc'} {logo} />
+
+    <svg use:qr={{
+      data: poll.link,
+      logo: 'https://svelte-put.vnphanquang.com/images/svelte-put-logo.svg',
+      shape: 'circle',
+      }}
+    />
   </div>
 {/each}
+
+
