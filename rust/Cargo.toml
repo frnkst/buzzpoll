@@ -9,3 +9,6 @@ edition = "2021"
 actix-web = "4"
 actix-web-actors = "4.3.0"
 actix = "0.13.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
+futures = "0.3"

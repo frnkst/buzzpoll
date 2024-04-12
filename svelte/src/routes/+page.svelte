@@ -9,6 +9,6 @@
 
 <section>
   <h1 class="text-6xl text-emerald-500 pacifico-regular">buzzpoll</h1>
-
+  <New></New>
 	<Polls />
 </section>
