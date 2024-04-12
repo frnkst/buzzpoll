@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+    import { onMount } from "svelte";
   import { qr } from '@svelte-put/qr/svg';
   import type { Poll } from "./model.svelte";
 
-  const logo = 'https://svelte-put.vnphanquang.com/images/svelte-put-logo.svg';
   const endpoint = "http://localhost:8080/poll";
   let polls: Poll[] = [];
 
@@ -15,6 +14,7 @@
 </script>
 
 {#each polls as poll}
+  <a href="{ `poll/${poll.id}`}">
   <div class="max-w-sm rounded overflow-hidden shadow-lg">
     <div class="px-6 py-4">
       <div class="font-bold text-xl mb-2">{ poll.question }</div>
@@ -30,6 +30,7 @@
       }}
     />
   </div>
+  </a>
 {/each}
 
 

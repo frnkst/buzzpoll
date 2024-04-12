@@ -1,6 +1,5 @@
 <script>
-	import Counter from './Counter.svelte';
-  import Polls from "./Polls.svelte";
+	import Polls from "./Polls.svelte";
 </script>
 
 <svelte:head>
