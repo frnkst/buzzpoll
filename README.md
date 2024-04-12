@@ -2,8 +2,7 @@
 
 ## Tech
 
-- Svelte
-- Go (Gorilla and Websockets)
-- DB?
+- SvelteKit
+- Rust ActivX
 - Neovim ;)
  
