@@ -2,7 +2,8 @@
 
 ## Tech
 
-- SvelteKit
-- Rust ActivX
+- Svelte (SvelteKit 5)
+- Tailwind 
+- Rust (ActiX)
 - Neovim ;)
  
