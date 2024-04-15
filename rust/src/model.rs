@@ -1,4 +1,9 @@
+use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
+
+pub(crate) struct AppState {
+    pub(crate) all_polls: Mutex<Vec<Poll>>,
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 pub(crate) struct Poll {

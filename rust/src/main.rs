@@ -6,6 +6,7 @@ use actix::{Actor, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use crate::services::{create_poll, get_polls, hello};
+use crate::model::{AppState};
 
 
 /// Define HTTP actor
@@ -33,9 +34,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
     resp
 }
 
-struct AppState {
-    all_polls: Mutex<Vec<model::Poll>>,
-}
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
