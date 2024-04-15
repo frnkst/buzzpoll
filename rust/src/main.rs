@@ -1,8 +1,10 @@
+mod model;
+
 use std::sync::Mutex;
 use actix::{Actor, StreamHandler};
 use actix_web::{web, get, post, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix_web_actors::ws;
-use serde::{Deserialize, Serialize};
+use model::{Poll, VoteRequest };
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -14,31 +16,6 @@ async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-struct Poll {
-    id: u32,
-    question: String,
-    answers: Option<Vec<Answer>>
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-struct Answer {
-    id: u32,
-    text: String,
-    votes: Vec<Vote>
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-struct Vote {
-    client: String,
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-struct VoteRequest {
-    id: u32,
-    answer: Answer,
-    client_id: String
-}
 
 #[get("/poll/{poll_id}")]
 async fn get_poll(
@@ -67,7 +44,7 @@ async fn vote(vote_request: web::Json<VoteRequest>, data: web::Data<AppState>) -
         // Find the answer
         if let Some(answer) = poll.answers.as_mut().and_then(|answers| answers.iter_mut().find(|a| a.id == vote_request.answer.id)) {
             // Push a new vote into the votes vector
-            answer.votes.push(Vote { client: "example_client".to_string() });
+            answer.votes.push(model::Vote { client: "example_client".to_string() });
             println!("Vote added successfully!");
         } else {
             println!("Answer with the id {} not found", vote_request.answer.id)
@@ -112,7 +89,7 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 }
 
 struct AppState {
-    all_polls: Mutex<Vec<Poll>>,
+    all_polls: Mutex<Vec<model::Poll>>,
 }
 
 #[actix_web::main]
