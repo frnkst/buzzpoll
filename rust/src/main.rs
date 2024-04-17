@@ -6,31 +6,34 @@ use crate::services::{create_poll, get_poll, get_polls, vote};
 use actix::{Actor, ActorContext, Addr, Context, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use actix_web::web::Data;
 use actix_web_actors::ws::WebsocketContext;
 
 
 /// Define HTTP actor
 struct MyWs {
-    app_data: web::Data<app_data::WsAppState>
+    data: Data<AppState>,
 }
 
 
 impl Actor for MyWs {
-    type Context = ws::WebsocketContext<Self>;
+    type Context = WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        &self.state.clients.push(ctx);
-        // println!("number of clients {:?}");
+        //println!("pushed one client");
+        // &self.app_data.clients.lock().unwrap().push(ctx);
+        // println!("number of clients {:?}", &self.app_data.clients.lock().unwrap().len());
     }
 }
 
 /// Handler for ws::Message message
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
-        println!("schlafen {:?}", msg);
+        //println!("schlafen {:?}", msg);
 
-        &self.state.clients.push(ctx);
+        let len = self.data.clients.lock().unwrap().len();
+        println!("test {:?}", len);
 
         // for ctx in &self.state.clients {
         //     unsafe { ctx.as_mut().expect("REASON").text("well well well"); }
@@ -45,16 +48,26 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
-async fn index(req: HttpRequest, stream: web::Payload, app_data: web::Data<ws::AppState>) -> Result<HttpResponse, Error> {
-    let resp = ws::start(MyWs { app_data: app_data.clone() }, &req, stream);
-    println!("frank {:?}", resp);
+async fn index(req: HttpRequest, stream: web::Payload, data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+    println!("frank");
+    //let state = Data::new(WsAppState {
+    //    clients: Mutex::new(Vec::new()),
+    //});
+
+    // let resp = ws::start(MyWs { app_data: state.clone() }, &req, stream);
+    let resp = ws::start(MyWs{ data}, &req, stream);
+    //println!("frank {:?}", resp);
     resp
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
+
     let state = web::Data::new(AppState {
-        all_polls: Mutex::new(Vec::new()),
+        all_polls: Arc::new(Mutex::new(Vec::new())),
+        clients: Arc::new(Mutex::new(Vec::new())),
     });
 
     HttpServer::new(move || {
