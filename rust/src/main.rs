@@ -1,7 +1,7 @@
 mod model;
 mod services;
 
-use crate::model::{AppState, WsAppState};
+use crate::model::{AppState};
 use crate::services::{create_poll, get_poll, get_polls, vote};
 use actix::{Actor, ActorContext, Addr, Context, StreamHandler};
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
@@ -12,15 +12,17 @@ use actix_web_actors::ws::WebsocketContext;
 
 
 /// Define HTTP actor
-struct MyWs {
-    data: Data<AppState>,
-}
+struct MyWs {}
+
 
 
 impl Actor for MyWs {
     type Context = WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
+
+
+
         //println!("pushed one client");
         // &self.app_data.clients.lock().unwrap().push(ctx);
         // println!("number of clients {:?}", &self.app_data.clients.lock().unwrap().len());
@@ -32,12 +34,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         //println!("schlafen {:?}", msg);
 
-        let len = self.data.clients.lock().unwrap().len();
-        println!("test {:?}", len);
-
         // for ctx in &self.state.clients {
         //     unsafe { ctx.as_mut().expect("REASON").text("well well well"); }
         // }
+
 
         match msg {
             Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
@@ -49,13 +49,15 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 }
 
 async fn index(req: HttpRequest, stream: web::Payload, data: web::Data<AppState>) -> Result<HttpResponse, Error> {
-    println!("frank");
+
     //let state = Data::new(WsAppState {
     //    clients: Mutex::new(Vec::new()),
     //});
+    let actor = MyWs {};
+    &data.clients.lock().unwrap().push(*actor);
 
     // let resp = ws::start(MyWs { app_data: state.clone() }, &req, stream);
-    let resp = ws::start(MyWs{ data}, &req, stream);
+    let resp = ws::start(actor, &req, stream);
     //println!("frank {:?}", resp);
     resp
 }
@@ -66,8 +68,8 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let state = web::Data::new(AppState {
-        all_polls: Arc::new(Mutex::new(Vec::new())),
-        clients: Arc::new(Mutex::new(Vec::new())),
+        all_polls: Mutex::new(Vec::new()),
+        clients: Mutex::new(Vec::new()),
     });
 
     HttpServer::new(move || {

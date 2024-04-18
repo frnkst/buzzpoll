@@ -1,15 +1,13 @@
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
+use std::task::Context;
+use actix::Actor;
 use actix_web_actors::ws::WebsocketContext;
 use crate::MyWs;
 
-pub(crate) struct WsAppState {
-    pub(crate) clients: Mutex<Vec<*mut WebsocketContext<MyWs>>>,
-}
-
 pub(crate) struct AppState {
-    pub(crate) all_polls: Arc<Mutex<Vec<Poll>>>,
-    pub(crate) clients: Arc<Mutex<Vec<WebsocketContext<MyWs>>>>,
+    pub(crate) all_polls: Mutex<Vec<Poll>>,
+    pub(crate) clients: Mutex<Vec<*mut MyWs>>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
