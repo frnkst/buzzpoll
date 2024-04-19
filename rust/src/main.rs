@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 use actix::{Actor, Context, StreamHandler};
-use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App};
-use actix_web::web::Data;
+use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App, get};
+use actix_web::web::{Data, service};
 use actix_web_actors::ws;
 use actix_web_actors::ws::WebsocketContext;
 use futures::SinkExt;
@@ -90,6 +90,13 @@ fn broadcast_message(state: web::Data<Arc<ChatState>>, message: &str) {
 }
 */
 
+#[get("/test")]
+async fn do_something(data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
+    let len = data.clients.lock().unwrap().len();
+    println!("len is {}", len);
+    Ok(HttpResponse::Ok().body("yes"))
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let chat_state = Arc::new(ChatState {
@@ -99,6 +106,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(chat_state.clone()))
+            .service(do_something)
             .route("/ws/", web::get().to(index))
     })
         .bind(("127.0.0.1", 8080))?
