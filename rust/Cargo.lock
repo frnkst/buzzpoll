@@ -363,6 +363,7 @@ dependencies = [
  "actix",
  "actix-web",
  "actix-web-actors",
+ "bytestring",
  "env_logger",
  "futures",
  "serde",

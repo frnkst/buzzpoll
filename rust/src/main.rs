@@ -1,9 +1,12 @@
+use std::io::Bytes;
+use std::ops::{Deref, DerefMut};
 use std::sync::{Arc, Mutex};
 use actix::{Actor, Context, StreamHandler};
 use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App, get};
 use actix_web::web::{Data, service};
 use actix_web_actors::ws;
-use actix_web_actors::ws::WebsocketContext;
+use actix_web_actors::ws::{Message, WebsocketContext};
+use bytestring::ByteString;
 use futures::SinkExt;
 use serde::{Deserialize, Serialize};
 
@@ -49,16 +52,17 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
-struct ChatState {
-    pub clients: Mutex<Vec<MyWs>>
+struct ChatState<'a> {
+    pub clients: Mutex<Vec<&'a MyWs>>
 }
 
-async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
+async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState<'_>>>) -> Result<HttpResponse, Error> {
     // In here I could access the global state
     let webSocketActor = MyWs {};
 
     // Here comes the trick part! Wow this just worked!
-    data.clients.lock().unwrap().push(webSocketActor.clone());
+    //data.clients.lock().unwrap().push(webSocketActor.clone());
+    data.clients.lock().unwrap().push(&webSocketActor.clone());
 
     let resp = ws::start(webSocketActor, &req, stream);
     println!("{:?}", resp);
@@ -82,7 +86,7 @@ fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> 
 }
 */
 /*
-fn broadcast_message(state: web::Data<Arc<ChatState>>, message: &str) {
+fn broadcast_message(state: web::Dbeforeata<Arc<ChatState>>, message: &str) {
     let clients = state.clients.lock().unwrap();
     for client in clients.iter() {
         client.send(message).ok(); // Ignore errors for simplicity
@@ -91,9 +95,19 @@ fn broadcast_message(state: web::Data<Arc<ChatState>>, message: &str) {
 */
 
 #[get("/test")]
-async fn do_something(data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
+async fn do_something(data: Data<Arc<ChatState<'_>>>) -> Result<HttpResponse, Error> {
     let len = data.clients.lock().unwrap().len();
     println!("len is {}", len);
+
+    // now comes the last tricky part. send a message to all websocket clients
+    let clients = data.clients.lock().unwrap().iter_mut();
+    for c in clients {
+        let bs = ByteString::from_static("hi");
+        // I only have the actor but not the context which is needed as a second argument
+        //c.handle(Ok(Message::Text(bs)));
+
+    }
+
     Ok(HttpResponse::Ok().body("yes"))
 }
 
