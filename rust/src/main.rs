@@ -69,7 +69,7 @@ impl Handler<ClientMessage> for MyWs {
     type Result = ();
 
     fn handle(&mut self, msg: ClientMessage, ctx: &mut WebsocketContext<Self>) {
-        ctx.text("hi there {}");
+        ctx.text(format!("hi there {}", msg.id));
     }
 }
 
