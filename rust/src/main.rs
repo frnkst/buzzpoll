@@ -7,7 +7,7 @@ use actix::dev::channel::AddressSender;
 use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App, get};
 use actix_web::web::{Data, service};
 use actix_web_actors::ws;
-use actix_web_actors::ws::{ WebsocketContext};
+use actix_web_actors::ws::{start_with_addr, WebsocketContext, WsResponseBuilder};
 use bytestring::ByteString;
 use futures::SinkExt;
 use serde::{Deserialize, Serialize};
@@ -64,17 +64,17 @@ pub struct ClientMessage {
     pub id: usize,
 }
 
-/// Handler for Message message.
+/// Handler for ClientMessage message.
 impl Handler<ClientMessage> for MyWs {
     type Result = ();
 
-    fn handle(&mut self, msg: ClientMessage, _: &mut WebsocketContext<Self>) {
-        //self.send_message("hi there");
+    fn handle(&mut self, msg: ClientMessage, ctx: &mut WebsocketContext<Self>) {
+        ctx.text("hi there {}");
     }
 }
 
 struct ChatState {
-    pub clients: Mutex<Vec<MyWs>>
+    pub clients: Mutex<Vec<Addr<MyWs>>>
 }
 
 async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
@@ -83,11 +83,13 @@ async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState>
 
     // Here comes the trick part! Wow this just worked!
     //data.clients.lock().unwrap().push(webSocketActor.clone());
-    data.clients.lock().unwrap().push(webSocketActor.clone());
+    //data.clients.lock().unwrap().push(webSocketActor.clone());
 
-    let resp = ws::start(webSocketActor, &req, stream);
-    println!("{:?}", resp);
-    resp
+    let resp = start_with_addr(webSocketActor, &req, stream);
+    let addr = resp.unwrap();
+    println!("{:?}", addr.0);
+    data.clients.lock().unwrap().push(addr.0);
+    Ok(addr.1)
 }
 
 /*
@@ -123,11 +125,11 @@ async fn do_something(data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error>
 
     // now comes the last tricky part. send a message to all websocket clients
     for a in data.clients.lock().unwrap().iter_mut() {
-        let adr = a.deref_mut().con;
-        adr.send(ClientMessage{ id: 5}).await.expect("TODO: panic message");
+        a.send(ClientMessage{ id: 5}).await.expect("TODO: panic message");
         //adr.do_send(ClientMessage{ id: 55});
 
     }
+    //let _ = MyWs{}.send(ClientMessage{id : 5});
 
 
     Ok(HttpResponse::Ok().body("yes"))
