@@ -1,11 +1,13 @@
 use std::io::Bytes;
 use std::ops::{Deref, DerefMut};
+use std::process::id;
 use std::sync::{Arc, Mutex};
-use actix::{Actor, Context, StreamHandler};
+use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, StreamHandler};
+use actix::dev::channel::AddressSender;
 use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App, get};
 use actix_web::web::{Data, service};
 use actix_web_actors::ws;
-use actix_web_actors::ws::{Message, WebsocketContext};
+use actix_web_actors::ws::{ WebsocketContext};
 use bytestring::ByteString;
 use futures::SinkExt;
 use serde::{Deserialize, Serialize};
@@ -21,7 +23,7 @@ use serde::{Deserialize, Serialize};
 // WebSocket
 
 #[derive(Clone)]
-struct MyWs;
+struct MyWs {}
 
 // Actor for WebSocket
 // What is an Actor? Actors communicate via Messages, via the handle Method
@@ -32,6 +34,10 @@ impl Actor for MyWs {
     // Maybe I can add myself to the global object
     fn started(&mut self, ctx: &mut WebsocketContext<Self>) {
         // In here I can't access the global state
+        //let addr = ctx.address();
+        //self.addr = addr;
+        println!("stored the address of the first context address: {:?}", ctx.address())
+
     }
 }
 
@@ -52,17 +58,32 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     }
 }
 
-struct ChatState<'a> {
-    pub clients: Mutex<Vec<&'a MyWs>>
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct ClientMessage {
+    pub id: usize,
 }
 
-async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState<'_>>>) -> Result<HttpResponse, Error> {
+/// Handler for Message message.
+impl Handler<ClientMessage> for MyWs {
+    type Result = ();
+
+    fn handle(&mut self, msg: ClientMessage, _: &mut WebsocketContext<Self>) {
+        //self.send_message("hi there");
+    }
+}
+
+struct ChatState {
+    pub clients: Mutex<Vec<MyWs>>
+}
+
+async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
     // In here I could access the global state
     let webSocketActor = MyWs {};
 
     // Here comes the trick part! Wow this just worked!
     //data.clients.lock().unwrap().push(webSocketActor.clone());
-    data.clients.lock().unwrap().push(&webSocketActor.clone());
+    data.clients.lock().unwrap().push(webSocketActor.clone());
 
     let resp = ws::start(webSocketActor, &req, stream);
     println!("{:?}", resp);
@@ -95,18 +116,19 @@ fn broadcast_message(state: web::Dbeforeata<Arc<ChatState>>, message: &str) {
 */
 
 #[get("/test")]
-async fn do_something(data: Data<Arc<ChatState<'_>>>) -> Result<HttpResponse, Error> {
-    let len = data.clients.lock().unwrap().len();
-    println!("len is {}", len);
+async fn do_something(data: Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
+    // This works!
+    //let len = data.clients.lock().unwrap().len();
+    //println!("len is {}", len);
 
     // now comes the last tricky part. send a message to all websocket clients
-    let clients = data.clients.lock().unwrap().iter_mut();
-    for c in clients {
-        let bs = ByteString::from_static("hi");
-        // I only have the actor but not the context which is needed as a second argument
-        //c.handle(Ok(Message::Text(bs)));
+    for a in data.clients.lock().unwrap().iter_mut() {
+        let adr = a.deref_mut().con;
+        adr.send(ClientMessage{ id: 5}).await.expect("TODO: panic message");
+        //adr.do_send(ClientMessage{ id: 55});
 
     }
+
 
     Ok(HttpResponse::Ok().body("yes"))
 }
