@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
-use std::task::Context;
-use actix::Actor;
-use actix_web_actors::ws::WebsocketContext;
+use std::sync::{Mutex};
+use actix::{Message};
 use crate::MyWs;
 
 pub(crate) struct AppState {
@@ -10,7 +8,8 @@ pub(crate) struct AppState {
     pub(crate) clients: Mutex<Vec<*mut MyWs>>
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Message)]
+#[rtype(result = "()")]
 pub(crate) struct Poll {
     pub(crate) id: u32,
     pub(crate) question: String,
