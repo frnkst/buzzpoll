@@ -85,7 +85,7 @@ async fn index(req: HttpRequest, stream: web::Payload, data: Data<Arc<ChatState>
     //data.clients.lock().unwrap().push(webSocketActor.clone());
     //data.clients.lock().unwrap().push(webSocketActor.clone());
 
-    let resp = start_with_addr(webSocketActor, &req, stream);
+    let resp = WsResponseBuilder::new(webSocketActor, &req, stream).start_with_addr();
     let addr = resp.unwrap();
     println!("{:?}", addr.0);
     data.clients.lock().unwrap().push(addr.0);
