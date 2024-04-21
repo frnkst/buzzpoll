@@ -3,9 +3,9 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/rust/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/rust/target" />
-      <excludeFolder url="file://$MODULE_DIR$/svelte/.svelte-kit" />
+      <sourceFolder url="file://$MODULE_DIR$/backend/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/target" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit" />
     </content>
     <orderEntry type="jdk" jdkName="corretto-19" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
