@@ -4,7 +4,6 @@ use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App};
 use actix_web::middleware::Logger;
 use actix_web_actors::ws;
 use env_logger::Env;
-use futures::poll;
 use model::Poll;
 
 mod model;

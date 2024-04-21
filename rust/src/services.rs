@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use crate::model::{AppState, Poll, VoteRequest};
+use crate::model::{Poll, VoteRequest};
 use actix_web::{get, post, web, Error, HttpResponse};
 use crate::{ChatState, model, PollMessage};
 
