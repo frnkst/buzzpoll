@@ -4,6 +4,7 @@ use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App};
 use actix_web::middleware::Logger;
 use actix_web_actors::ws;
 use env_logger::Env;
+use futures::poll;
 use model::Poll;
 
 mod model;
@@ -65,7 +66,7 @@ impl Handler<PollMessage> for MyWs {
     type Result = ();
 
     fn handle(&mut self, poll_message: PollMessage, ctx: &mut ws::WebsocketContext<Self>) {
-        ctx.text(format!("hi there {}", poll_message.poll.id));
+        ctx.text(serde_json::to_string(&poll_message.poll).unwrap());
     }
 }
 
