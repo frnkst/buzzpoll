@@ -1,20 +1,20 @@
 use std::sync::Arc;
-use crate::model::{Poll, VoteRequest};
+use crate::model::{Poll, PollMessage, VoteRequest, AppState};
 use actix_web::{get, post, web, Error, HttpResponse};
-use crate::{ChatState, model, PollMessage};
+use crate::model;
 
 #[get("/poll")]
-async fn get_polls(data: web::Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok().json(&data.all_polls))
+async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok().json(&data.polls))
 }
 
 #[get("/poll/{poll_id}")]
 async fn get_poll(
-    data: web::Data<Arc<ChatState>>,
+    data: web::Data<Arc<AppState>>,
     path: web::Path<u32>,
 ) -> Result<HttpResponse, Error> {
     let poll_id = path.into_inner();
-    let all_polls = data.all_polls.lock().unwrap();
+    let all_polls = data.polls.lock().unwrap();
     let poll = all_polls.iter().find(|x| x.id == poll_id);
     Ok(HttpResponse::Ok().json(poll))
 }
@@ -22,14 +22,14 @@ async fn get_poll(
 #[post("/poll")]
 async fn create_poll(
     poll: web::Json<Poll>,
-    data: web::Data<Arc<ChatState>>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
-    let mut all_polls = data.all_polls.lock().unwrap();
+    let mut all_polls = data.polls.lock().unwrap();
     all_polls.push(poll.0.clone());
     Ok(HttpResponse::Ok().json(poll))
 }
 
-async fn broadcast_poll(data: &web::Data<Arc<ChatState>>, poll: &Poll) {
+async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
     let poll_message = PollMessage{ poll: poll.clone() };
     for client in data.clients.lock().unwrap().iter_mut() {
         client.send(poll_message.clone()).await.expect("Could not send poll to clients");
@@ -39,9 +39,9 @@ async fn broadcast_poll(data: &web::Data<Arc<ChatState>>, poll: &Poll) {
 #[post("/vote")]
 async fn vote(
     vote_request: web::Json<VoteRequest>,
-    data: web::Data<Arc<ChatState>>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
-    let mut all_polls = data.all_polls.lock().unwrap();
+    let mut all_polls = data.polls.lock().unwrap();
 
     // Find the poll
     if let Some(poll) = all_polls.iter_mut().find(|p| p.id == vote_request.id) {

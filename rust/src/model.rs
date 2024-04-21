@@ -1,11 +1,17 @@
 use serde::{Deserialize, Serialize};
 use std::sync::{Mutex};
-use actix::{Message};
+use actix::{Addr, Message};
 use crate::MyWs;
 
 pub(crate) struct AppState {
-    pub(crate) all_polls: Mutex<Vec<Poll>>,
-    pub(crate) clients: Mutex<Vec<*mut MyWs>>
+    pub(crate) clients: Mutex<Vec<Addr<MyWs>>>,
+    pub(crate) polls: Mutex<Vec<Poll>>
+}
+
+#[derive(Message, Clone)]
+#[rtype(result = "()")]
+pub(crate) struct PollMessage {
+    pub(crate) poll: Poll,
 }
 
 #[derive(Serialize, Deserialize, Clone, Message)]
