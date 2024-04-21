@@ -1,7 +1,0 @@
-# buzzpoll
-
-## Package
-```
-./gradlew build
-```
-
