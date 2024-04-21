@@ -18,11 +18,8 @@ impl Actor for MyWs {
 // Echoing all messages back
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
-        match msg {
-            Ok(ws::Message::Text(text)) => {
-                ctx.text(text);
-            }
-            _ => (),
+        if let Ok(ws::Message::Text(text)) = msg {
+            ctx.text(text);
         }
     }
 }
