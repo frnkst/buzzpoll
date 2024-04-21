@@ -114,12 +114,7 @@ fn broadcast_message(state: web::Dbeforeata<Arc<ChatState>>, message: &str) {
 }
 */
 
-async fn broadcast_poll(data: &web::Data<Arc<ChatState>>, poll: &Poll) {
-    let poll_message = PollMessage{ poll: poll.clone() };
-    for client in data.clients.lock().unwrap().iter_mut() {
-        client.send(poll_message.clone()).await.expect("Could not send poll to clients");
-    }
-}
+
 
 /*
 #[get("/test")]

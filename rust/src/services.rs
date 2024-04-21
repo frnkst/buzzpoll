@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use crate::model::{AppState, Poll, VoteRequest};
 use actix_web::{get, post, web, Error, HttpResponse};
-use crate::{broadcast_poll, ChatState, model};
+use crate::{ChatState, model, PollMessage};
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<ChatState>>) -> Result<HttpResponse, Error> {
@@ -29,6 +29,13 @@ async fn create_poll(
     Ok(HttpResponse::Ok().json(poll))
 }
 
+async fn broadcast_poll(data: &web::Data<Arc<ChatState>>, poll: &Poll) {
+    let poll_message = PollMessage{ poll: poll.clone() };
+    for client in data.clients.lock().unwrap().iter_mut() {
+        client.send(poll_message.clone()).await.expect("Could not send poll to clients");
+    }
+}
+
 #[post("/vote")]
 async fn vote(
     vote_request: web::Json<VoteRequest>,
@@ -49,7 +56,7 @@ async fn vote(
                 client: "example_client".to_string(),
             });
             println!("Vote added successfully!");
-            broadcast_poll(&data, poll);
+            broadcast_poll(&data, poll).await;
         } else {
             println!("Answer with the id {} not found", vote_request.answer.id)
         }
