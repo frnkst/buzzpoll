@@ -1,10 +1,11 @@
 <script context="module" lang="ts">
-export type Poll = {
+
+  export type Poll = {
 		id?: number,
     link?: string,
-				question: string,
-				answers: Answer[];
-				}
+    question: string,
+		answers: Answer[];
+}
 
 export type Answer = {
 	id: string,

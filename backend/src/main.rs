@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use actix::{Actor, Handler, StreamHandler};
-use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App};
+use actix_cors::Cors;
+use actix_web::{web, Error, HttpRequest, HttpResponse, HttpServer, App, http};
 use actix_web::middleware::Logger;
 use actix_web_actors::ws;
 use env_logger::Env;
@@ -48,10 +49,11 @@ async fn main() -> std::io::Result<()> {
         polls: Mutex::new(Vec::new()),
     });
 
-    env_logger::init_from_env(Env::default().default_filter_or("info"));
+    env_logger::init_from_env(Env::default().default_filter_or("debug"));
 
     HttpServer::new(move || {
-        App::new()
+    App::new()
+            .wrap(Cors::permissive())
             .wrap(Logger::default())
             .app_data(web::Data::new(chat_state.clone()))
             .service(services::create_poll)
