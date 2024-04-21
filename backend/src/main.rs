@@ -36,9 +36,9 @@ impl Handler<model::PollMessage> for MyWs {
 async fn index(req: HttpRequest, stream: web::Payload, data: web::Data<Arc<model::AppState>>) -> Result<HttpResponse, Error> {
     let actor = MyWs {};
 
-    let addr = ws::WsResponseBuilder::new(actor, &req, stream).start_with_addr().unwrap();
-    data.clients.lock().unwrap().push(addr.0);
-    Ok(addr.1)
+    let (addr, response) = ws::WsResponseBuilder::new(actor, &req, stream).start_with_addr().unwrap();
+    data.clients.lock().unwrap().push(addr);
+    Ok(response)
 }
 
 #[actix_web::main]
