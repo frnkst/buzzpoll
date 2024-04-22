@@ -4,7 +4,7 @@ use actix_web::middleware::Logger;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use env_logger::Env;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 
 mod model;
 mod services;
@@ -43,16 +43,13 @@ async fn start_websocket(
     let (addr, response) = ws::WsResponseBuilder::new(actor, &req, stream)
         .start_with_addr()
         .expect("Could not start new actor");
-    data.clients.lock().unwrap().push(addr);
+    data.clients().lock().unwrap().push(addr);
     Ok(response)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let app_state = Arc::new(model::AppState {
-        clients: Mutex::new(Vec::new()),
-        polls: Mutex::new(Vec::new()),
-    });
+    let app_state = Arc::new(model::AppState::new());
 
     env_logger::init_from_env(Env::default().default_filter_or("debug"));
 

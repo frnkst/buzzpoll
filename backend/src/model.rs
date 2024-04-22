@@ -3,9 +3,26 @@ use std::sync::{Mutex};
 use actix::{Addr, Message};
 use crate::MyWs;
 
-pub(crate) struct AppState {
-    pub(crate) clients: Mutex<Vec<Addr<MyWs>>>,
-    pub(crate) polls: Mutex<Vec<Poll>>
+pub struct AppState {
+    clients: Mutex<Vec<Addr<MyWs>>>,
+    polls: Mutex<Vec<Poll>>
+}
+
+impl AppState {
+    pub fn new() -> Self {
+        AppState {
+            clients: Mutex::new(Vec::new()),
+            polls: Mutex::new(Vec::new())
+        }
+    }
+
+    pub fn clients(&self) -> &Mutex<Vec<Addr<MyWs>>> {
+        return &self.clients;
+    }
+
+    pub fn polls(&self) -> &Mutex<Vec<Poll>> {
+        return &self.polls;
+    }
 }
 
 #[derive(Message, Clone)]
