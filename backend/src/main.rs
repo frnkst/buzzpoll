@@ -1,11 +1,13 @@
+use crate::app_state::AppState;
 use actix::{Actor, Handler, StreamHandler};
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use env_logger::Env;
-use std::sync::{Arc};
+use std::sync::Arc;
 
+mod app_state;
 mod model;
 mod services;
 
@@ -37,7 +39,7 @@ impl Handler<model::PollMessage> for MyWs {
 async fn start_websocket(
     req: HttpRequest,
     stream: web::Payload,
-    data: web::Data<Arc<model::AppState>>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let actor = MyWs {};
     let (addr, response) = ws::WsResponseBuilder::new(actor, &req, stream)
@@ -49,7 +51,7 @@ async fn start_websocket(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let app_state = Arc::new(model::AppState::new());
+    let app_state = Arc::new(AppState::new());
 
     env_logger::init_from_env(Env::default().default_filter_or("debug"));
 
