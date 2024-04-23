@@ -1,8 +1,9 @@
 use crate::model::{Poll, PollMessage, VoteRequest};
 use actix_web::{get, post, web, Error, HttpResponse};
 use std::sync::Arc;
+use futures::poll;
 use crate::app_state::AppState;
-use crate::model;
+use crate::{Answer, model, Vote};
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
@@ -16,7 +17,7 @@ async fn get_poll(
 ) -> Result<HttpResponse, Error> {
     let poll_id = path.into_inner();
     let all_polls = data.polls.lock().unwrap();
-    let poll = all_polls.iter().find(|x| x.id == poll_id);
+    let poll = all_polls.get(&poll_id);
     Ok(HttpResponse::Ok().json(poll))
 }
 
@@ -26,7 +27,7 @@ async fn create_poll(
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let mut all_polls = data.polls.lock().unwrap();
-    all_polls.push(poll.0.clone());
+    all_polls.insert(poll.id, poll.0.clone());
     Ok(HttpResponse::Ok().json(poll))
 }
 
@@ -48,24 +49,13 @@ async fn vote(
     let mut all_polls = data.polls.lock().unwrap();
 
     // Find the poll
-    if let Some(poll) = all_polls.iter_mut().find(|p| p.id == vote_request.id) {
+    if let Some(&mut ref poll) = all_polls.get_mut(&vote_request.id) {
         // Find the answer
-        if let Some(answer) = poll
-            .answers
-            .as_mut()
-            .and_then(|answers| answers.iter_mut().find(|a| a.id == vote_request.answer.id))
-        {
-            // Push a new vote into the votes vector
-            answer.votes.push(model::Vote {
-                client: "example_client".to_string(),
-            });
-            println!("Vote added successfully!");
-            broadcast_poll(&data, poll).await;
-        } else {
-            println!("Answer with the id {} not found", vote_request.answer.id)
+        if let Some(mut answer) = &poll.answers {
+            let mut a = answer.iter_mut().find(|answer| answer.id == vote_request.answer.id);
+            // Add the vote
+            a.unwrap().votes.push(Vote{ client: String::from("yey")})
         }
-    } else {
-        println!("Poll with the id {} not found", vote_request.id)
     }
 
     Ok(HttpResponse::Ok().body("done!"))
