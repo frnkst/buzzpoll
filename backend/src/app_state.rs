@@ -1,7 +1,6 @@
-use crate::model::Poll;
-use crate::MyWs;
 use actix::Addr;
 use std::sync::Mutex;
+use crate::{MyWs, Poll};
 
 pub struct AppState {
     pub clients: Mutex<Vec<Addr<MyWs>>>,

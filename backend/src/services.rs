@@ -1,8 +1,9 @@
-use crate::app_state::AppState;
-use crate::model;
+
 use crate::model::{Poll, PollMessage, VoteRequest};
 use actix_web::{get, post, web, Error, HttpResponse};
 use std::sync::Arc;
+use crate::app_state::AppState;
+use crate::model;
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
