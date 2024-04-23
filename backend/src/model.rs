@@ -3,33 +3,33 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Message, Clone)]
 #[rtype(result = "()")]
-pub(crate) struct PollMessage {
-    pub(crate) poll: Poll,
+pub struct PollMessage {
+    pub poll: Poll,
 }
 
 #[derive(Serialize, Deserialize, Clone, Message)]
 #[rtype(result = "()")]
-pub(crate) struct Poll {
-    pub(crate) id: u32,
-    pub(crate) question: String,
-    pub(crate) answers: Option<Vec<Answer>>,
+pub struct Poll {
+    pub id: u32,
+    pub question: String,
+    pub answers: Option<Vec<Answer>>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub(crate) struct Answer {
-    pub(crate) id: u32,
-    pub(crate) text: String,
-    pub(crate) votes: Vec<Vote>,
+pub struct Answer {
+    pub id: u32,
+    pub text: String,
+    pub votes: Vec<Vote>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub(crate) struct Vote {
-    pub(crate) client: String,
+pub struct Vote {
+    pub client: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub(crate) struct VoteRequest {
-    pub(crate) id: u32,
-    pub(crate) answer: Answer,
-    pub(crate) client_id: String,
+pub struct VoteRequest {
+    pub id: u32,
+    pub answer: Answer,
+    pub client_id: String,
 }

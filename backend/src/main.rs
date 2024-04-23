@@ -45,7 +45,7 @@ async fn start_websocket(
     let (addr, response) = ws::WsResponseBuilder::new(actor, &req, stream)
         .start_with_addr()
         .expect("Could not start new actor");
-    data.clients().lock().unwrap().push(addr);
+    data.clients.lock().unwrap().push(addr);
     Ok(response)
 }
 
