@@ -1,4 +1,3 @@
-
 use crate::model::{Poll, PollMessage, VoteRequest};
 use actix_web::{get, post, web, Error, HttpResponse};
 use std::sync::Arc;
