@@ -10,6 +10,7 @@ use actix_web::http::Error;
 // What is a better shape for the vote request?
 // Write unit and integration tests
 // Test everything...
+// Never use unwrap
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
@@ -55,9 +56,12 @@ async fn vote(
     let mut all_polls = data.polls.lock().unwrap();
 
     all_polls
-        .get_mut(&vote_request.id)?
-        .answers.iter_mut()
-        .find(|answer| answer.id == vote_request.answer.id)?
+        .get_mut(&vote_request.id)
+        .unwrap()
+        .answers
+        .iter_mut()
+        .find(|answer| answer.id == vote_request.answer.id)
+        .unwrap()
         .votes
         .push(Vote {
             client: String::from("yey"),
