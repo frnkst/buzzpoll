@@ -25,7 +25,11 @@ async fn get_poll(
     let poll_id = path.into_inner();
     let all_polls = data.polls.lock().unwrap();
     let poll = all_polls.get(&poll_id);
-    Ok(HttpResponse::Ok().json(poll))
+
+    match poll {
+        None => { Ok(HttpResponse::NotFound().body(format!("Poll with id {} not found", &poll_id)))}
+        Some(poll) => { Ok(HttpResponse::Ok().json(poll))}
+    }
 }
 
 #[post("/poll")]
