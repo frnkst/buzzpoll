@@ -1,8 +1,7 @@
 use crate::app_state::AppState;
 use crate::model::{Poll, PollMessage, VoteRequest};
-use crate::{model, Answer, Vote};
+use crate::{Vote};
 use actix_web::{get, post, web, Error, HttpResponse};
-use futures::poll;
 use std::sync::Arc;
 
 #[get("/poll")]
@@ -59,6 +58,8 @@ async fn vote(
         .push(Vote {
             client: String::from("yey"),
         });
+
+    broadcast_poll(&data, &all_polls.get(&vote_request.id));
 
     Ok(HttpResponse::Ok().body("done!"))
 }
