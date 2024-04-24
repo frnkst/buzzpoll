@@ -41,7 +41,7 @@ async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
     }
 }
 
-#[post("/votee")]
+#[post("/vote")]
 async fn vote(
     vote_request: web::Json<VoteRequest>,
     data: web::Data<Arc<AppState>>,
