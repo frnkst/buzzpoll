@@ -1,9 +1,9 @@
-use crate::model::{Poll, PollMessage, VoteRequest};
-use actix_web::{get, post, web, Error, HttpResponse};
-use std::sync::Arc;
-use futures::poll;
 use crate::app_state::AppState;
-use crate::{Answer, model, Vote};
+use crate::model::{Poll, PollMessage, VoteRequest};
+use crate::{model, Answer, Vote};
+use actix_web::{get, post, web, Error, HttpResponse};
+use futures::poll;
+use std::sync::Arc;
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
@@ -41,22 +41,24 @@ async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
     }
 }
 
-#[post("/vote")]
+#[post("/votee")]
 async fn vote(
     vote_request: web::Json<VoteRequest>,
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let mut all_polls = data.polls.lock().unwrap();
 
-    // Find the poll
-    if let Some(&mut ref poll) = all_polls.get_mut(&vote_request.id) {
-        // Find the answer
-        if let Some(mut answer) = &poll.answers {
-            let mut a = answer.iter_mut().find(|answer| answer.id == vote_request.answer.id);
-            // Add the vote
-            a.unwrap().votes.push(Vote{ client: String::from("yey")})
-        }
-    }
+    all_polls
+        .get_mut(&vote_request.id)
+        .unwrap()
+        .answers
+        .iter_mut()
+        .find(|answer| answer.id == vote_request.answer.id)
+        .unwrap()
+        .votes
+        .push(Vote {
+            client: String::from("yey"),
+        });
 
     Ok(HttpResponse::Ok().body("done!"))
 }

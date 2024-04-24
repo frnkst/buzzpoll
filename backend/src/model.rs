@@ -7,22 +7,22 @@ pub struct PollMessage {
     pub poll: Poll,
 }
 
-#[derive(Serialize, Deserialize, Clone, Message)]
+#[derive(Serialize, Deserialize, Clone, Message, Debug)]
 #[rtype(result = "()")]
 pub struct Poll {
     pub id: u32,
     pub question: String,
-    pub answers: Option<Vec<Answer>>,
+    pub answers: Vec<Answer>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Answer {
     pub id: u32,
     pub text: String,
     pub votes: Vec<Vote>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Vote {
     pub client: String,
 }
