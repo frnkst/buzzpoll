@@ -1,8 +1,9 @@
 use crate::app_state::AppState;
 use crate::model::{Poll, PollMessage, VoteRequest};
 use crate::{Vote};
-use actix_web::{get, post, web, Error, HttpResponse};
+use actix_web::{get, post, web, HttpResponse};
 use std::sync::Arc;
+use actix_web::http::Error;
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
@@ -49,17 +50,17 @@ async fn vote(
 
     all_polls
         .get_mut(&vote_request.id)
-        .unwrap()
+        .expect(format!("Poll with the request id {} not found", vote_request.id))
         .answers
         .iter_mut()
         .find(|answer| answer.id == vote_request.answer.id)
-        .unwrap()
+        .expect(format!("Answer with the id {} not found", vote_request.answer.id))
         .votes
         .push(Vote {
             client: String::from("yey"),
         });
 
-    broadcast_poll(&data, &all_polls.get(&vote_request.id));
+    broadcast_poll(&data, &all_polls.get(&vote_request.id).unwrap()).await;
 
     Ok(HttpResponse::Ok().body("done!"))
 }
