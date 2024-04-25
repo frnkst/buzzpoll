@@ -1,6 +1,7 @@
+use std::collections::HashMap;
 use crate::app_state::AppState;
 use crate::model::{Poll, VoteRequest};
-use crate::{Answer, CreatePollRequest};
+use crate::{CreatePollRequest};
 use actix_web::http::Error;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use nanoid::nanoid;
@@ -35,21 +36,18 @@ async fn get_poll(
 
 #[post("/poll")]
 async fn create_poll(
-    create_poll_request: web::Json<CreatePollRequest>,
+    mut create_poll_request: web::Json<CreatePollRequest>,
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
+    let answers: HashMap<String, String> = create_poll_request.answers.iter_mut()
+        .map(|answer| (nanoid!(), answer.to_string()))
+        .collect();
+
     let poll = Poll {
         id: nanoid!(),
         question: String::from(&create_poll_request.question),
-        answers: create_poll_request
-            .answers
-            .iter()
-            .map(|answer| Answer {
-                id: nanoid!(),
-                text: String::from(answer),
-                votes: Vec::new(),
-            })
-            .collect(),
+        answers,
+        votes: HashMap::new(),
     };
 
     let mut all_polls = data.polls.lock().unwrap();
@@ -67,23 +65,10 @@ async fn vote(
     vote_request: web::Json<VoteRequest>,
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
-    //let cookie_vote_id = get_cookie_value(req);
-    let cookie_vote_id = String::from("frank");
-
+    let cookie_vote_id = get_cookie_value(req);
     let mut all_polls = data.polls.lock().unwrap();
-    let answer = all_polls
-        .get_mut(&vote_request.poll_id)
-        .unwrap()
-        .answers
-        .iter_mut()
-        .find(|answer| answer.id == vote_request.answer_id)
-        .unwrap();
-
-    // This is highly questionable... There must be a much better alternative
-    answer.votes.push(cookie_vote_id.to_string());
-    answer.votes.sort_unstable();
-    answer.votes.dedup();
-
+    let poll = all_polls.get_mut(&vote_request.poll_id).unwrap();
+    poll.votes.insert(vote_request.answer_id.to_string(), cookie_vote_id.to_string());
     broadcast_poll(&data, &all_polls.get(&vote_request.poll_id).unwrap()).await;
 
     Ok(HttpResponse::Ok().body("done!"))
