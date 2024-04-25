@@ -1,9 +1,9 @@
+use actix_web::{test, web, App};
+use buzzpoll::{app_state, services, Poll};
+use http::StatusCode;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use actix_web::{App, web, test};
-use http::StatusCode;
-use buzzpoll::{app_state, services, Poll};
-use serde_json::Value;
 
 #[actix_web::test]
 async fn test_get_polls_empty() {
@@ -13,7 +13,7 @@ async fn test_get_polls_empty() {
             .app_data(web::Data::new(app_state.clone()))
             .service(services::get_polls),
     )
-        .await;
+    .await;
     let req = test::TestRequest::get().uri("/poll").to_request();
 
     let resp = test::call_service(&app, req).await;
@@ -25,16 +25,22 @@ async fn test_get_polls_empty() {
 #[actix_web::test]
 async fn test_get_polls() {
     let polls: Mutex<HashMap<String, Poll>> = Mutex::new(HashMap::new());
-    let expected_poll = Poll { id: "test-poll".to_string(), answers: Vec::new(), question: String::from("Where is the love?") };
-    polls.lock().unwrap().insert(expected_poll.id.clone(), expected_poll.clone());
+    let expected_poll = some_poll();
+    polls
+        .lock()
+        .unwrap()
+        .insert(expected_poll.id.clone(), expected_poll.clone());
 
-    let app_state = Arc::new(app_state::AppState{ clients: Mutex::new(vec![]), polls: polls});
+    let app_state = Arc::new(app_state::AppState {
+        clients: Mutex::new(vec![]),
+        polls: polls,
+    });
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(app_state.clone()))
             .service(services::get_polls),
     )
-        .await;
+    .await;
     let req = test::TestRequest::get().uri("/poll").to_request();
 
     let resp = test::call_service(&app, req).await;
@@ -48,39 +54,58 @@ async fn test_get_polls() {
 #[actix_web::test]
 async fn test_get_one_poll() {
     let polls: Mutex<HashMap<String, Poll>> = Mutex::new(HashMap::new());
-    let expected_poll = Poll { id: "test-poll".to_string(), answers: Vec::new(), question: String::from("Where is the love?") };
-    polls.lock().unwrap().insert(expected_poll.id.clone(), expected_poll.clone());
+    let expected_poll = some_poll();
+    polls
+        .lock()
+        .unwrap()
+        .insert(expected_poll.id.clone(), expected_poll.clone());
 
-    let app_state = Arc::new(app_state::AppState{ clients: Mutex::new(vec![]), polls: polls});
+    let app_state = Arc::new(app_state::AppState {
+        clients: Mutex::new(vec![]),
+        polls: polls,
+    });
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(app_state.clone()))
             .service(services::get_poll),
     )
-        .await;
+    .await;
     let req = test::TestRequest::get().uri("/poll/1").to_request();
 
     let body: Poll = test::call_and_read_body_json(&app, req).await;
-    assert_eq!(body,expected_poll);
+    assert_eq!(body, expected_poll);
 }
 
 #[actix_web::test]
 async fn test_get_one_that_doesnt_exists() {
     let polls: Mutex<HashMap<String, Poll>> = Mutex::new(HashMap::new());
-    let expected_poll = Poll { id: "test-poll".to_string(), answers: Vec::new(), question: String::from("Where is the love?") };
-    polls.lock().unwrap().insert(expected_poll.id.clone(), expected_poll.clone());
+    let expected_poll = some_poll();
+    polls
+        .lock()
+        .unwrap()
+        .insert(expected_poll.id.clone(), expected_poll.clone());
 
-    let app_state = Arc::new(app_state::AppState{ clients: Mutex::new(vec![]), polls: polls});
+    let app_state = Arc::new(app_state::AppState {
+        clients: Mutex::new(vec![]),
+        polls: polls,
+    });
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(app_state.clone()))
             .service(services::get_poll),
     )
-        .await;
+    .await;
     let req = test::TestRequest::get().uri("/poll/999").to_request();
 
     let resp = test::call_service(&app, req).await;
     assert_eq!(resp.status(), 404);
 }
 
-
+fn some_poll() -> Poll {
+    Poll {
+        id: "test-poll".to_string(),
+        question: String::from("Where is the love?"),
+        answers: HashMap::new(),
+        votes: HashMap::new(),
+    }
+}
