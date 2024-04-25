@@ -9,10 +9,11 @@ use std::sync::Arc;
 use actix_web::cookie::Cookie;
 
 // TODO
-// Write unit and integration tests
-// Test everything...
+// Write integration test for vote
+// Create a model folder and put the model files in there?
+// Write unit tests
 // Never use unwrap
-// Write endpoints to do a string poll and store data
+// Extend functionality and write endpoints to do a string poll and store data
 
 #[get("/poll")]
 async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
