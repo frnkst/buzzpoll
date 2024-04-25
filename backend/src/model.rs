@@ -1,12 +1,6 @@
 use actix::Message;
 use serde::{Deserialize, Serialize};
 
-#[derive(Message, Clone)]
-#[rtype(result = "()")]
-pub struct PollMessage {
-    pub poll: Poll,
-}
-
 #[derive(Serialize, Deserialize, Clone, Message, Debug, PartialOrd, PartialEq)]
 #[rtype(result = "()")]
 pub struct Poll {

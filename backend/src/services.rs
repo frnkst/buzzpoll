@@ -1,5 +1,5 @@
 use crate::app_state::AppState;
-use crate::model::{Poll, PollMessage, VoteRequest};
+use crate::model::{Poll, VoteRequest};
 use crate::{Vote};
 use actix_web::{get, post, web, HttpResponse};
 use std::sync::Arc;
@@ -43,10 +43,9 @@ async fn create_poll(
 }
 
 async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
-    let poll_message = PollMessage { poll: poll.clone() };
     for client in data.clients.lock().unwrap().iter_mut() {
         client
-            .send(poll_message.clone())
+            .send(poll.clone())
             .await
             .expect("Could not send poll to clients");
     }
