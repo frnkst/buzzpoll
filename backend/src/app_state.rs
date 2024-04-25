@@ -5,7 +5,7 @@ use crate::{MyWs, Poll};
 
 pub struct AppState {
     pub clients: Mutex<Vec<Addr<MyWs>>>,
-    pub polls: Mutex<HashMap<u32, Poll>>,
+    pub polls: Mutex<HashMap<String, Poll>>,
 }
 
 impl AppState {

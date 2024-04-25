@@ -5,7 +5,7 @@ use actix_web::{App, Error, HttpRequest, HttpResponse, HttpServer, web};
 use actix_web::middleware::Logger;
 use actix_web_actors::ws;
 use env_logger::Env;
-use crate::{app_state, model, Poll, services};
+use crate::{app_state, model, services};
 
 #[actix_web::main]
 pub async fn run() -> std::io::Result<()>  {
@@ -49,7 +49,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWs {
 impl Handler<model::Poll> for MyWs {
     type Result = ();
 
-    fn handle(&mut self, poll: Poll, ctx: &mut ws::WebsocketContext<Self>) {
+    fn handle(&mut self, poll: model::Poll, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.text(serde_json::to_string(&poll).expect("Could no serialize poll"));
     }
 }
