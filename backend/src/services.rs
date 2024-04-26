@@ -10,9 +10,7 @@ use actix_web::cookie::Cookie;
 
 // TODO
 // Write integration test for vote
-// Create a model folder and put the model files in there?
 // Write unit tests
-// Never use unwrap
 // Extend functionality and write endpoints to do a string poll and store data
 
 #[get("/poll")]
