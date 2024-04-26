@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::app_state::AppState;
 use crate::model::{Poll, VoteRequest};
-use crate::{CreatePollRequest};
+use crate::{Answer, CreatePollRequest};
 use actix_web::http::Error;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use nanoid::nanoid;
@@ -18,19 +18,20 @@ async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error
     Ok(HttpResponse::Ok().json(&data.polls))
 }
 
+fn get_poll_by_id(poll_id: &str, data: &actix_web::web::Data<Arc<AppState>>) -> Poll {
+    let mut all_polls = data.polls.lock().unwrap();
+    all_polls.iter_mut().find(|poll| poll.id == poll_id).cloned().unwrap()
+}
+
 #[get("/poll/{poll_id}")]
 async fn get_poll(
     data: web::Data<Arc<AppState>>,
     path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     let poll_id = path.into_inner();
-    let all_polls = data.polls.lock().unwrap();
-    let poll = all_polls.get(&poll_id);
+    let poll = get_poll_by_id(&poll_id, &data);
 
-    match poll {
-        None => Ok(HttpResponse::NotFound().body(format!("Poll with id {} not found", &poll_id))),
-        Some(poll) => Ok(HttpResponse::Ok().json(poll)),
-    }
+    Ok(HttpResponse::Ok().json(poll))
 }
 
 #[post("/poll")]
@@ -38,8 +39,8 @@ async fn create_poll(
     mut create_poll_request: web::Json<CreatePollRequest>,
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
-    let answers: HashMap<String, String> = create_poll_request.answers.iter_mut()
-        .map(|answer| (nanoid!(), answer.to_string()))
+    let answers: Vec<Answer> = create_poll_request.answers.iter_mut()
+        .map(|answer| Answer{ id: nanoid!(), text: answer.to_string()})
         .collect();
 
     let poll = Poll {
@@ -50,7 +51,7 @@ async fn create_poll(
     };
 
     let mut all_polls = data.polls.lock().unwrap();
-    all_polls.insert(poll.id.clone(), poll.clone());
+    all_polls.push(poll.clone());
     Ok(HttpResponse::Ok().json(poll))
 }
 
@@ -65,10 +66,10 @@ async fn vote(
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let cookie_vote_id = get_cookie_value(req);
-    let mut all_polls = data.polls.lock().unwrap();
-    let poll = all_polls.get_mut(&vote_request.poll_id).unwrap();
+    let mut poll = get_poll_by_id(&vote_request.poll_id, &data);
+
     poll.votes.insert(vote_request.answer_id.to_string(), cookie_vote_id.to_string());
-    broadcast_poll(&data, &all_polls.get(&vote_request.poll_id).unwrap()).await;
+    broadcast_poll(&data, &poll).await;
 
     Ok(HttpResponse::Ok().body("done!"))
 }

@@ -20,8 +20,14 @@ pub struct VoteRequest {
 pub struct Poll {
     pub id: String,
     pub question: String,
-    pub answers: HashMap<String, String>,
+    pub answers: Vec<Answer>,
     pub votes: HashMap<String, String>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Message, Debug, PartialEq)]
+#[rtype(result = "()")]
+pub struct Answer {
+    pub id: String,
+    pub text: String,
+}
 

@@ -2,22 +2,18 @@
 	import type {Poll} from "./Model.svelte";
 
 	export async function save() {
-		console.log("start");
 		const poll = {
-			id: 5,
 			question: question,
-      answers: [{ id: 1, text: answer1, votes: []}]
+      answers: ["answer1", "answer2"]
     };
 
-		const response = await fetch("http://localhost:8080/poll",{ headers: {
+		await fetch("http://localhost:8080/poll",{ headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
 			},
 			method: "POST",
       body: JSON.stringify(poll)
     });
-		const data = await response.json();
-		console.log("frank", data);
 	}
 
 	let question;
