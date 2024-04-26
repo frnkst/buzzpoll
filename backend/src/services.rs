@@ -82,7 +82,7 @@ async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
         Ok(mut res) => {
             let a = res.iter_mut();
             for b in a {
-                b.send(poll.clone()).await.map_err(|err| eprintln!("mailbox error")).unwrap();
+                b.send(poll.clone()).await.expect("mailbox already closed!!!")
             }
         }
         Err(_) => {
