@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from "svelte";
+	import {writable} from "svelte/store";
 
 	console.log("frank", $page.params.pollId);
   let poll;
@@ -12,6 +13,34 @@
 		const response = await fetch(endpoint);
 		poll  = await response.json();
 		console.log("franky: ", poll);
+
+		let message;
+		let messages = [];
+
+		const messageStore = writable('');
+
+		const socket = new WebSocket('ws://127.0.0.1:8080/ws/');
+
+// Connection opened
+		socket.addEventListener('open', function (event) {
+			console.log("It's open");
+		});
+
+// Listen for messages
+		socket.addEventListener('message', function (event) {
+			messageStore.set(event.data);
+		});
+
+		const sendMessage = (message: any) => {
+			if (socket.readyState <= 1) {
+				socket.send(message);
+			}
+		}
+
+		messageStore.subscribe(currentMessage => {
+			messages = [...messages, currentMessage];
+			console.log("messages", messages);
+		})
 	});
 
 	async function submit(answerId: string) {
@@ -30,7 +59,6 @@
 			body: JSON.stringify(voteRequest)
 		});
 	}
-
 
 </script>
 
