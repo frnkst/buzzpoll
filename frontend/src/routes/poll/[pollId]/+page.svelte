@@ -23,8 +23,9 @@
 		await fetch("http://localhost:8080/vote", {
 			headers: {
 				'Accept': 'application/json',
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
 			},
+      credentials: 'include',
 			method: "POST",
 			body: JSON.stringify(voteRequest)
 		});

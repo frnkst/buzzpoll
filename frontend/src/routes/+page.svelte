@@ -1,6 +1,13 @@
 <script>
 	import Polls from "./Polls.svelte";
 	import New from "./New.svelte";
+
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		window.document.cookie = 'myCookie=myValue; path=/';
+	});
+
 </script>
 
 <svelte:head>
