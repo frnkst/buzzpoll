@@ -5,8 +5,9 @@ use crate::{Answer, CreatePollRequest};
 use actix_web::http::Error;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use nanoid::nanoid;
-use std::sync::Arc;
+use std::sync::{Arc, TryLockResult};
 use actix_web::cookie::Cookie;
+use futures::SinkExt;
 
 // TODO
 // Write integration test for vote
@@ -75,10 +76,17 @@ async fn vote(
 }
 
 async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
-    for client in data.clients.lock().unwrap().iter_mut() {
-        client
-            .send(poll.clone())
-            .await
-            .expect("Could not send poll to clients");
+    let lock_result = data.clients.lock();
+
+    match lock_result {
+        Ok(mut res) => {
+            let a = res.iter_mut();
+            for b in a {
+                b.send(poll.clone()).await.map_err(|err| eprintln!("mailbox error")).unwrap();
+            }
+        }
+        Err(_) => {
+            eprint!("Could not accuire lock")
+        }
     }
 }

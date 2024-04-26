@@ -35,6 +35,11 @@ pub struct MyWs {}
 
 impl Actor for MyWs {
     type Context = ws::WebsocketContext<Self>;
+
+    fn stopped(&mut self, ctx: &mut Self::Context) {
+        println!("Websocket stopped, now removing the client from the list. But how???");
+
+    }
 }
 
 // Echoing all messages back
@@ -65,5 +70,6 @@ pub async fn start_websocket(
         .start_with_addr()
         .expect("Could not start new actor");
     data.clients.lock().unwrap().push(addr);
+    println!("Added client. Now serving {} clients over websockets", data.clients.lock().unwrap().len());
     Ok(response)
 }
