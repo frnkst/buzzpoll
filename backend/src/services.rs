@@ -5,9 +5,8 @@ use crate::{Answer, CreatePollRequest};
 use actix_web::http::Error;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use nanoid::nanoid;
-use std::sync::{Arc, TryLockResult};
+use std::sync::{Arc};
 use actix_web::cookie::Cookie;
-use futures::SinkExt;
 
 // TODO
 // Write integration test for vote

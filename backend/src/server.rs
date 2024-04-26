@@ -1,12 +1,12 @@
-use std::rc::Rc;
-use std::sync::{Arc, Mutex};
-use actix::{Actor, Addr, AsyncContext, Context, Handler, StreamHandler};
+use std::sync::{Arc};
+use actix::{Actor, AsyncContext, Handler, StreamHandler};
 use actix_cors::Cors;
 use actix_web::{App, Error, HttpRequest, HttpResponse, HttpServer, web};
 use actix_web::middleware::Logger;
 use actix_web::web::Data;
 use actix_web_actors::ws;
 use env_logger::Env;
+use log::info;
 use crate::{app_state, AppState, model, services};
 
 
@@ -39,17 +39,14 @@ pub struct MyWs {
 impl Actor for MyWs {
     type Context = ws::WebsocketContext<Self>;
 
-    fn stopped(&mut self, ctx: &mut Self::Context) {
-        println!("Websocket stopped, now removing the client from the list. But how???");
-        self.clients.clients.lock().unwrap().retain(|x| *x != ctx.address());;
-        println!("remove addr {:?}", ctx.address());
-        println!("size in now {}", self.clients.clients.lock().unwrap().len());
-    }
-
     fn started(&mut self, ctx: &mut Self::Context) {
         self.clients.clients.lock().unwrap().push(ctx.address());
-        println!("add addr {:?}", ctx.address());
-        println!("size in now {}", self.clients.clients.lock().unwrap().len());
+        info!("Started websocket client. Now serving {} clients", self.clients.clients.lock().unwrap().len());
+    }
+
+    fn stopped(&mut self, ctx: &mut Self::Context) {
+        self.clients.clients.lock().unwrap().retain(|x| *x != ctx.address());
+        info!("Stopped websocket client. Now serving {} clients", self.clients.clients.lock().unwrap().len());
     }
 }
 
@@ -76,10 +73,6 @@ pub async fn start_websocket(
     stream: web::Payload,
     data: web::Data<Arc<app_state::AppState>>,
 ) -> Result<HttpResponse, Error> {
-    let actor = MyWs { clients: data };
-    let (addr, response) = ws::WsResponseBuilder::new(actor, &req, stream)
-        .start_with_addr()
-        .expect("Could not start new actor");
-    //println!("Added client. Now serving {} clients over websockets", data.clients.lock().unwrap().len());
-    Ok(response)
+    let resp = ws::start(MyWs { clients: data }, &req, stream);
+    resp
 }

@@ -471,6 +471,7 @@ dependencies = [
  "env_logger",
  "futures",
  "http",
+ "log",
  "nanoid",
  "rand",
  "serde",
