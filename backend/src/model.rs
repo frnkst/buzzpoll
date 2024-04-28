@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use actix::Message;
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +20,6 @@ pub struct Poll {
     pub id: String,
     pub question: String,
     pub answers: Vec<Answer>,
-    pub votes: HashMap<String, String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Message, Debug, PartialEq)]
@@ -29,5 +27,5 @@ pub struct Poll {
 pub struct Answer {
     pub id: String,
     pub text: String,
+    pub votes: Vec<String>,
 }
-

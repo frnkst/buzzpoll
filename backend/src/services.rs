@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-use crate::app_state::AppState;
 use crate::model::{Poll, VoteRequest};
-use crate::{Answer, CreatePollRequest};
+use crate::{Answer, AppState, CreatePollRequest};
 use actix_web::http::Error;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use nanoid::nanoid;
@@ -23,6 +21,12 @@ fn get_poll_by_id(poll_id: &str, data: &actix_web::web::Data<Arc<AppState>>) -> 
     all_polls.iter_mut().find(|poll| poll.id == poll_id).cloned().unwrap()
 }
 
+fn get_answer_by_id(poll_id: &str, answer_id: &str, data: &actix_web::web::Data<Arc<AppState>>) -> Answer {
+    let mut all_polls = data.polls.lock().unwrap();
+    let mut poll = all_polls.iter_mut().find(|poll| poll.id == poll_id).cloned().unwrap();
+    poll.answers.iter_mut().find(|answer| answer.id == answer_id).cloned().unwrap()
+}
+
 #[get("/poll/{poll_id}")]
 async fn get_poll(
     data: web::Data<Arc<AppState>>,
@@ -40,14 +44,13 @@ async fn create_poll(
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let answers: Vec<Answer> = create_poll_request.answers.iter_mut()
-        .map(|answer| Answer{ id: nanoid!(), text: answer.to_string()})
+        .map(|answer| Answer{ id: nanoid!(), text: answer.to_string(), votes: Vec::new()})
         .collect();
 
     let poll = Poll {
         id: nanoid!(),
         question: String::from(&create_poll_request.question),
         answers,
-        votes: HashMap::new(),
     };
 
     let mut all_polls = data.polls.lock().unwrap();
@@ -68,7 +71,7 @@ async fn vote(
     let cookie_vote_id = get_cookie_value(req);
     let mut poll = get_poll_by_id(&vote_request.poll_id, &data);
 
-    poll.votes.insert(vote_request.answer_id.to_string(), cookie_vote_id.to_string());
+    poll.answers.iter_mut().find(|answer| answer.id == vote_request.answer_id).unwrap().votes.push(cookie_vote_id.to_string());
     broadcast_poll(&data, &poll).await;
 
     Ok(HttpResponse::Ok().body("done!"))
