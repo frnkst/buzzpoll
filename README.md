@@ -1,7 +1,11 @@
 # buzzpoll
 
-## Tech
+An open source, poll and survey tool.
 
-- Svelte (SvelteKit 5)
+## Tech stack
+
+- SvelteKit
 - Tailwind 
-- Rust (ActiX)
+- Adobe Echarts
+- Actix
+- Docker
