@@ -16,24 +16,15 @@ async fn get_polls(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error
     Ok(HttpResponse::Ok().json(&data.polls))
 }
 
-fn get_poll_by_id(poll_id: &str, data: &actix_web::web::Data<Arc<AppState>>) -> Poll {
-    let mut all_polls = data.polls.lock().unwrap();
-    all_polls.iter_mut().find(|poll| poll.id == poll_id).cloned().unwrap()
-}
-
-fn get_answer_by_id(poll_id: &str, answer_id: &str, data: &actix_web::web::Data<Arc<AppState>>) -> Answer {
-    let mut all_polls = data.polls.lock().unwrap();
-    let mut poll = all_polls.iter_mut().find(|poll| poll.id == poll_id).cloned().unwrap();
-    poll.answers.iter_mut().find(|answer| answer.id == answer_id).cloned().unwrap()
-}
-
 #[get("/poll/{poll_id}")]
 async fn get_poll(
     data: web::Data<Arc<AppState>>,
     path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     let poll_id = path.into_inner();
-    let poll = get_poll_by_id(&poll_id, &data);
+
+    let all_polls = data.polls.lock().unwrap();
+    let poll = all_polls.iter().find(|poll| poll.id == poll_id).unwrap();
 
     Ok(HttpResponse::Ok().json(poll))
 }
@@ -69,9 +60,13 @@ async fn vote(
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let cookie_vote_id = get_cookie_value(req);
-    let mut poll = get_poll_by_id(&vote_request.poll_id, &data);
 
-    poll.answers.iter_mut().find(|answer| answer.id == vote_request.answer_id).unwrap().votes.push(cookie_vote_id.to_string());
+    let mut all_polls = data.polls.lock().unwrap();
+    let mut poll = all_polls.iter_mut().find(|poll| poll.id == vote_request.poll_id).unwrap();
+
+    let mut answer = poll.answers.iter_mut().find(|answer| answer.id == vote_request.answer_id).unwrap();
+    let mut votes: &mut Vec<String> = answer.votes.as_mut();
+    votes.push(cookie_vote_id.to_string());
     broadcast_poll(&data, &poll).await;
 
     Ok(HttpResponse::Ok().body("done!"))
