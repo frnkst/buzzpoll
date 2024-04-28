@@ -95,7 +95,7 @@
 {/if}
 
 
-<div id="main" style="width:600px; height:400px;"></div>
+<div id="main" style="height:400px;"></div>
 
 
 

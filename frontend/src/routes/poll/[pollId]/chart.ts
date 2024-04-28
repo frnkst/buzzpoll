@@ -6,8 +6,8 @@ export const option = {
 		type: 'category',
 		data: [],
 		inverse: true,
-		animationDuration: 300,
-		animationDurationUpdate: 300,
+		animationDuration: 200,
+		animationDurationUpdate: 200,
 	},
 	series: [
 		{
@@ -26,7 +26,7 @@ export const option = {
 		show: true
 	},
 	animationDuration: 0,
-	animationDurationUpdate: 3000,
+	animationDurationUpdate: 200,
 	animationEasing: 'linear',
 	animationEasingUpdate: 'linear'
 };
