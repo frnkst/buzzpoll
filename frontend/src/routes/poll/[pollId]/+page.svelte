@@ -48,8 +48,18 @@
 		}
 
 		messageStore.subscribe(currentMessage => {
-			console.log("frank:" , currentMessage);
-			
+			if (!currentMessage) {
+				return
+      }
+
+			console.log("we are here", currentMessage);
+			const obj = JSON.parse(currentMessage);
+			console.log("we are here2", obj);
+			option.series[0].data = obj.answers.map(answer => answer.votes.length );
+			console.log("options: ", option.series[0].data)
+			myChart.setOption(option);
+
+
 
 			messages = [...messages, currentMessage];
 			console.log("messages", messages);
