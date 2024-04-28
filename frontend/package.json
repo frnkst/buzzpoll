@@ -40,6 +40,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@svelte-put/qr": "^1.2.0"
+		"@svelte-put/qr": "^1.2.0",
+		"echarts": "^5.5.0"
 	}
 }
