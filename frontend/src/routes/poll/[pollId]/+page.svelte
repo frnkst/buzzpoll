@@ -11,13 +11,11 @@
 		document.cookie = `buzzpoll=${nanoid()}`;
   }
 
-
-
 	onMount(async function () {
 		setCookie();
 
 		const endpoint = "http://localhost:8080/poll/" + $page.params.pollId;
-    var myChart = echarts.init(document.getElementById('main'));
+		const myChart = echarts.init(document.getElementById('main'));
 
     const response = await fetch(endpoint);
 		poll  = await response.json();

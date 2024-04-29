@@ -1,4 +1,4 @@
-use std::sync::{Arc};
+use std::sync::{Arc, Mutex};
 use actix::{Actor, AsyncContext, Handler, StreamHandler};
 use actix_cors::Cors;
 use actix_web::{App, Error, HttpRequest, HttpResponse, HttpServer, web};
@@ -7,7 +7,7 @@ use actix_web::web::Data;
 use actix_web_actors::ws;
 use env_logger::Env;
 use log::info;
-use crate::{app_state, AppState, model, services};
+use crate::{app_state, AppState, model, Poll, services};
 
 
 #[actix_web::main]
@@ -33,20 +33,22 @@ pub async fn run() -> std::io::Result<()>  {
 }
 
 pub struct MyWs {
-    pub clients: Data<Arc<AppState>>
+    pub app_state: Data<Arc<AppState>>
 }
 
 impl Actor for MyWs {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        self.clients.clients.lock().unwrap().push(ctx.address());
-        info!("Started websocket client. Now serving {} clients", self.clients.clients.lock().unwrap().len());
+        self.app_state.clients.lock().unwrap().push(ctx.address());
+        info!("Started websocket client. Now serving {} clients", self.app_state.clients.lock().unwrap().len());
+
+        // TODO Immediately send the client information about the first poll he's listening for
     }
 
     fn stopped(&mut self, ctx: &mut Self::Context) {
-        self.clients.clients.lock().unwrap().retain(|x| *x != ctx.address());
-        info!("Stopped websocket client. Now serving {} clients", self.clients.clients.lock().unwrap().len());
+        self.app_state.clients.lock().unwrap().retain(|x| *x != ctx.address());
+        info!("Stopped websocket client. Now serving {} clients", self.app_state.clients.lock().unwrap().len());
     }
 }
 
@@ -73,6 +75,6 @@ pub async fn start_websocket(
     stream: web::Payload,
     data: web::Data<Arc<app_state::AppState>>,
 ) -> Result<HttpResponse, Error> {
-    let resp = ws::start(MyWs { clients: data }, &req, stream);
+    let resp = ws::start(MyWs { app_state: data }, &req, stream);
     resp
 }

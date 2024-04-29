@@ -72,7 +72,7 @@ async fn vote(
     Ok(HttpResponse::Ok().body("done!"))
 }
 
-async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
+pub async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
     let lock_result = data.clients.lock();
 
     match lock_result {
