@@ -62,10 +62,10 @@ async fn vote(
     let cookie_vote_id = get_cookie_value(req);
 
     let mut all_polls = data.polls.lock().unwrap();
-    let mut poll = all_polls.iter_mut().find(|poll| poll.id == vote_request.poll_id).unwrap();
+    let poll = all_polls.iter_mut().find(|poll| poll.id == vote_request.poll_id).unwrap();
 
-    let mut answer = poll.answers.iter_mut().find(|answer| answer.id == vote_request.answer_id).unwrap();
-    let mut votes: &mut Vec<String> = answer.votes.as_mut();
+    let answer = poll.answers.iter_mut().find(|answer| answer.id == vote_request.answer_id).unwrap();
+    let votes: &mut Vec<String> = answer.votes.as_mut();
     votes.push(cookie_vote_id.to_string());
     broadcast_poll(&data, &poll).await;
 

@@ -1,12 +1,16 @@
 <script>
 	import Polls from "./Polls.svelte";
-	import New from "./New.svelte";
+	import { goto } from '$app/navigation';
 
 	import { onMount } from 'svelte';
 
 	onMount(() => {
 		window.document.cookie = 'myCookie=myValue; path=/';
 	});
+
+	function handleNew() {
+		goto("/new");
+	}
 
 </script>
 
@@ -17,6 +21,12 @@
 
 <section>
   <h1 class="text-6xl text-emerald-500 pacifico-regular">buzzpoll</h1>
-	<New></New>
+
+	<div class="w-full flex justify-center">
+		<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-5/6 mt-12" on:click={handleNew}>
+			New poll
+		</button>
+	</div>
+
 	<Polls />
 </section>
