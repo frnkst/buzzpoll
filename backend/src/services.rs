@@ -77,13 +77,13 @@ pub async fn broadcast_poll(data: &web::Data<Arc<AppState>>, poll: &Poll) {
 
     match lock_result {
         Ok(mut res) => {
-            let a = res.iter_mut();
-            for b in a {
-                b.send(poll.clone()).await.expect("mailbox already closed!!!")
+            let clients = res.iter_mut();
+            for client in clients {
+                client.send(poll.clone()).await.expect("mailbox already closed!!!")
             }
         }
         Err(_) => {
-            eprint!("Could not accuire lock")
+            eprint!("Could not acquire lock")
         }
     }
 }

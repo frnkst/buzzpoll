@@ -42,8 +42,6 @@ impl Actor for MyWs {
     fn started(&mut self, ctx: &mut Self::Context) {
         self.app_state.clients.lock().unwrap().push(ctx.address());
         info!("Started websocket client. Now serving {} clients", self.app_state.clients.lock().unwrap().len());
-
-        // TODO Immediately send the client information about the first poll he's listening for
     }
 
     fn stopped(&mut self, ctx: &mut Self::Context) {

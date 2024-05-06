@@ -20,6 +20,7 @@
     const response = await fetch(endpoint);
 		poll  = await response.json();
 		option.yAxis.data = poll.answers.map(answer => answer.text);
+		option.series[0].data = poll.answers.map(answer => answer.votes.length);
 		myChart.setOption(option);
 
 		const socket = new WebSocket('ws://127.0.0.1:8080/ws/');
