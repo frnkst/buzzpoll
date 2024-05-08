@@ -22,9 +22,6 @@ export const option = {
 			}
 		}
 	],
-	legend: {
-		show: true
-	},
 	animationDuration: 0,
 	animationDurationUpdate: 200,
 	animationEasing: 'linear',
